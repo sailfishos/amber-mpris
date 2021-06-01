@@ -1,8 +1,6 @@
-// -*- c++ -*-
-
 /*!
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,26 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#ifndef DECLARATIVEMPRISPLAYER_P_H
+#define DECLARATIVEMPRISPLAYER_P_H
 
-#ifndef MPRIS_PLUGIN_H
-#define MPRIS_PLUGIN_H
-
-#include <QQmlExtensionPlugin>
-#include <QtGlobal>
+#include <QObject>
+#include <QVariant>
+#include <ambermpris.h>
+#include "mprisplayer.h"
 
 namespace Amber {
-class MprisPlugin : public QQmlExtensionPlugin
+class AMBER_MPRIS_EXPORT DeclarativeMprisPlayer : public MprisPlayer
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "Amber.Mpris")
 
 public:
-    MprisPlugin(QObject *parent = 0);
-    ~MprisPlugin();
+    virtual qlonglong position() const;
 
-    virtual void registerTypes(const char *uri);
+Q_SIGNALS:
+    void positionRequested();
 };
 }
 
-
-#endif /* MPRIS_PLUGIN_H */
+#endif

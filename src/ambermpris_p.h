@@ -1,11 +1,6 @@
-// -*- c++ -*-
-
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,14 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#ifndef MPRISQT_P_H
+#define MPRISQT_P_H
 
-#ifndef MPRIS_QT_H
-#define MPRIS_QT_H
+#include <QDBusConnection>
 
-#if defined(MPRIS_QT_LIBRARY)
-#  define MPRIS_QT_EXPORT Q_DECL_EXPORT
+static inline QDBusConnection getDBusConnection()
+{
+#ifdef USE_SYSTEM_DBUS
+    return QDBusConnection::systemBus();
 #else
-#  define MPRIS_QT_EXPORT Q_DECL_IMPORT
+    return QDBusConnection::sessionBus();
 #endif
+}
 
-#endif /* MPRIS_QT_H */
+#endif

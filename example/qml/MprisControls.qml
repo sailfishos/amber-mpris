@@ -1,9 +1,6 @@
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,13 +19,13 @@
 
 
 import QtQuick 2.0
-import org.nemomobile.qtmpris 1.0
+import Amber.Mpris 1.0
 
 Item {
     id: controls
 
-    property MprisManager mprisManager
-    property bool isPlaying: mprisManager.currentService && mprisManager.playbackStatus == Mpris.Playing
+    property MprisController mprisController
+    property bool isPlaying: mprisController.playbackStatus == Mpris.Playing
 
     height: parent.height
     width: column.width
@@ -39,11 +36,7 @@ Item {
         Text {
             id: artistLabel
 
-            text: if (mprisManager.currentService) {
-                var artistTag = Mpris.metadataToString(Mpris.Artist)
-
-                return (artistTag in mprisManager.metadata) ? mprisManager.metadata[artistTag].toString() : ""
-            }
+            text: (mprisController.metaData.contributingArtist || []).join(', ')
             width: parent.width
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignHCenter
@@ -52,11 +45,7 @@ Item {
         Text {
             id: songLabel
 
-            text: if (mprisManager.currentService) {
-                var titleTag = Mpris.metadataToString(Mpris.Title)
-
-                return (titleTag in mprisManager.metadata) ? mprisManager.metadata[titleTag].toString() : ""
-            }
+            text: mprisController.metaData.title || ''
             width: parent.width
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignHCenter
@@ -69,7 +58,7 @@ Item {
                 width: controls.parent.width * 0.25
                 height: width
 
-                onClicked: if (mprisManager.canGoPrevious) mprisManager.previous()
+                onClicked: if (mprisController.canGoPrevious) mprisController.previous()
 
                 Text {
                     anchors.centerIn: parent
@@ -81,9 +70,7 @@ Item {
                 width: controls.parent.width * 0.25
                 height: width
 
-                onClicked: if ((controls.isPlaying && mprisManager.canPause) || (!controls.isPlaying && mprisManager.canPlay)) {
-                    mprisManager.playPause()
-                }
+                onClicked: if (mprisController.canPlay || mprisController.canPause) mprisController.playPause()
 
                 Text {
                     anchors.centerIn: parent
@@ -95,7 +82,7 @@ Item {
                 width: controls.parent.width * 0.25
                 height: width
 
-                onClicked: if (mprisManager.canGoPrevious) if (mprisManager.canGoNext) mprisManager.next()
+                onClicked: if (mprisController.canGoNext) mprisController.next()
 
                 Text {
                     anchors.centerIn: parent

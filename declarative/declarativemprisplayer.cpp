@@ -1,11 +1,6 @@
-// -*- c++ -*-
-
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,17 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include <QVariant>
+#include "declarativemprisplayer_p.h"
 
-#include "dbusextendedpendingcallwatcher_p.h"
+using namespace Amber;
 
-
-DBusExtendedPendingCallWatcher::DBusExtendedPendingCallWatcher(const QDBusPendingCall &call, const QString &asyncProperty, const QVariant &previousValue, QObject *parent)
-    : QDBusPendingCallWatcher(call, parent)
-    , m_asyncProperty(asyncProperty)
-    , m_previousValue(previousValue)
+qlonglong DeclarativeMprisPlayer::position() const
 {
-}
+    Q_EMIT const_cast<DeclarativeMprisPlayer *>(this)->positionRequested();
 
-DBusExtendedPendingCallWatcher::~DBusExtendedPendingCallWatcher()
-{
+    return MprisPlayer::position();
 }

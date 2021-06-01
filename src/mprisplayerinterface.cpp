@@ -1,11 +1,6 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +18,12 @@
  */
 
 
-#include "mpriscontroller_p.h"
-
+#include "mprisclient_p.h"
 #include "mpris.h"
 
-#include <QtCore/QtDebug>
+#include <QtDebug>
+
+using namespace Amber;
 
 
 /*

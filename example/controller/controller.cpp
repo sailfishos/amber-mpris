@@ -2,10 +2,7 @@
 
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,24 +20,21 @@
  */
 
 #include <Mpris>
-#include <MprisManager>
+#include <MprisController>
+#include <MprisMetaData>
 
 #include <QtQuick>
 
 #include <QGuiApplication>
-
-static QObject * api_factory(QQmlEngine *, QJSEngine *)
-{
-    return new Mpris;
-}
 
 int main(int argc, char *argv[])
 {
     QGuiApplication *app = new QGuiApplication(argc, argv);
     QQuickView *view = new QQuickView;
 
-    qmlRegisterSingletonType<Mpris>("org.nemomobile.qtmpris", 1, 0, "Mpris", api_factory);
-    qmlRegisterType<MprisManager>("org.nemomobile.qtmpris", 1, 0, "MprisManager");
+    qmlRegisterUncreatableType<Amber::Mpris>("Amber.Mpris", 1, 0, "Mpris", QStringLiteral("Mpris is a namespace object"));
+    qmlRegisterUncreatableType<Amber::MprisMetaData>("Amber.Mpris", 1, 0, "MprisMetaData", QStringLiteral("MprisMetaData can not be instantiated"));
+    qmlRegisterType<Amber::MprisController>("Amber.Mpris", 1, 0, "MprisController");
 
     view->setSource(app->applicationDirPath().append("/../qml/controller.qml"));
     view->show();

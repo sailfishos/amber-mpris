@@ -1,11 +1,6 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,24 +31,24 @@
 //
 
 
-#ifndef MPRISCONTROLLER_P_H
-#define MPRISCONTROLLER_P_H
+#ifndef MPRISCLIENT_P_H
+#define MPRISCLIENT_P_H
 
 #include <DBusExtendedAbstractInterface>
 
-#include <QtCore/QObject>
-#include <QtCore/QByteArray>
-#include <QtCore/QList>
-#include <QtCore/QMap>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtCore/QVariant>
-#include <QtDBus/QtDBus>
+#include <QObject>
+#include <QList>
+#include <QString>
+#include <QStringList>
+#include <QVariant>
+#include <QDBusConnection>
+#include <QDBusPendingReply>
 
+namespace Amber {
 /*
  * Proxy class for interface org.mpris.MediaPlayer2
  */
-class MprisRootInterface: public DBusExtendedAbstractInterface
+class MprisRootInterface: public Private::DBusExtendedAbstractInterface
 {
     Q_OBJECT
 public:
@@ -85,7 +80,7 @@ public:
     inline bool fullscreen()
     { return qvariant_cast< bool >(internalPropGet("Fullscreen", &m_fullscreen)); }
     inline void setFullscreen(bool value)
-    { m_fullscreen = value; internalPropSet("Fullscreen", QVariant::fromValue(value), &m_fullscreen); }
+    { internalPropSet("Fullscreen", QVariant::fromValue(value)); }
 
     Q_PROPERTY(bool HasTrackList READ hasTrackList NOTIFY hasTrackListChanged)
     inline bool hasTrackList()
@@ -142,17 +137,10 @@ private:
     QStringList m_supportedMimeTypes;
 };
 
-namespace org {
-    namespace mpris {
-        typedef ::MprisRootInterface MediaPlayer2;
-    }
-}
-
-
 /*
  * Proxy class for interface org.mpris.MediaPlayer2
  */
-class MprisPlayerInterface: public DBusExtendedAbstractInterface
+class MprisPlayerInterface: public Private::DBusExtendedAbstractInterface
 {
     Q_OBJECT
 public:
@@ -192,7 +180,7 @@ public:
     inline QString loopStatus()
     { return qvariant_cast< QString >(internalPropGet("LoopStatus", &m_loopStatus)); }
     inline void setLoopStatus(const QString &value)
-    { m_loopStatus = value; internalPropSet("LoopStatus", QVariant::fromValue(value), &m_loopStatus); }
+    { internalPropSet("LoopStatus", QVariant::fromValue(value)); }
 
     Q_PROPERTY(double MaximumRate READ maximumRate NOTIFY maximumRateChanged)
     inline double maximumRate()
@@ -218,19 +206,19 @@ public:
     inline double rate()
     { return qvariant_cast< double >(internalPropGet("Rate", &m_rate)); }
     inline void setRate(double value)
-    { m_rate = value; internalPropSet("Rate", QVariant::fromValue(value), &m_rate); }
+    { internalPropSet("Rate", QVariant::fromValue(value)); }
 
     Q_PROPERTY(bool Shuffle READ shuffle WRITE setShuffle NOTIFY shuffleChanged)
     inline bool shuffle()
     { return qvariant_cast< bool >(internalPropGet("Shuffle", &m_shuffle)); }
     inline void setShuffle(bool value)
-    { m_shuffle = value; internalPropSet("Shuffle", QVariant::fromValue(value), &m_shuffle); }
+    { internalPropSet("Shuffle", QVariant::fromValue(value)); }
 
     Q_PROPERTY(double Volume READ volume WRITE setVolume NOTIFY volumeChanged)
     inline double volume()
     { return qvariant_cast< double >(internalPropGet("Volume", &m_volume)); }
     inline void setVolume(double value)
-    { m_volume = value; internalPropSet("Volume", QVariant::fromValue(value), &m_volume); }
+    { internalPropSet("Volume", QVariant::fromValue(value)); }
 
 public Q_SLOTS: // METHODS
     inline QDBusPendingReply<> Next()
@@ -306,7 +294,7 @@ Q_SIGNALS: // SIGNALS
     void rateChanged(double rate);
     void shuffleChanged(bool shuffle);
     void volumeChanged(double volume);
-    void seeked(qlonglong Position);
+    void Seeked(qlonglong Position);
 
 private Q_SLOTS:
     void onPropertyChanged(const QString &propertyName, const QVariant &value);
@@ -328,9 +316,6 @@ private:
     bool m_shuffle;
     double m_volume;
 };
-
-namespace MediaPlayer2 {
-    typedef ::MprisPlayerInterface Player;
 }
 
 #endif /* MPRISROOTINTERFACE_P_H */
