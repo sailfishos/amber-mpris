@@ -1,6 +1,4 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
  * Copyright (C) 2015-2021 Jolla Ltd.
  *
@@ -19,6 +17,428 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/*!
+    \qmltype MprisController
+    \inqmlmodule Amber.Mpris
+    \brief Remote controls a media player
+    \internal
+
+    MprisController provides ability to remotely control a media player
+    via the MPRIS API. If there are multiple players, the manager uses
+    a simple heuristic to decide which player to control:
+    \list
+    \li the currently selected player if it is playing
+    \li the player that last went into playing state and has not changed since
+    \li the player that last went into playing state, or was started
+    \endlist
+
+    Alternatively the current player can be locked using the singleService
+    property.
+
+    All properties of an MprisController can be safely accessed, even if there
+    is no current player, and sane default values are returned.
+
+    A simple example for showing information about the current media of the current player:
+    \qml
+        Text {
+            text: manager.identity + " is currently playing " + manager.metaData.title + " by " + (manager.metaData.contributingArtist || []).join(', ')
+
+            MprisController { id: manager }
+        }
+    \endqml
+*/
+
+/*!
+    \qmlproperty bool MprisController::singleService
+    \brief Lock the manager to control a single player
+
+    When set to true, the manager will only control a single player
+    service. Otherwise the manager will try to guess which player
+    to control.
+*/
+
+/*!
+    \qmlproperty string MprisController::currentService
+    \brief The service name of the currently controller player
+
+    Indicates the service name of the player currently being controlled.
+    When set, the control is moved to the indicated service, but unless
+    singleService is set, control may automatically move.
+
+    Defaults to false.
+
+    \sa MprisController::singleService
+*/
+
+/*!
+    \qmlproperty list<string> MprisController::availableServices
+    \brief List of service names of current players
+
+    The list contains service names of all players currently registered.
+*/
+
+/*!
+    \qmlproperty list<MprisClient> MprisController::availableClients
+    \brief List of MprisClients for current players
+    \internal
+
+    Provides a list of objects that can be used to control specific player.
+    Can be used as a model for ListView or Repeater.
+
+    Note, the life time of the returned objects is only as long as they are
+    advertised by the manager, using them after the property has changed
+    will cause a crash.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canQuit
+    \qmlproperty bool MprisClient::canQuit
+    \brief Indicates whether the controlled player can be closed
+
+    When true, the quit method can be called to request closure of
+    the player.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canRaise
+    \qmlproperty bool MprisClient::canRaise
+    \brief Indicates whether the controlled player can present itself
+
+    When true, the raise method can be called to request the controlled
+    player to show its interface to the user.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canSetFullscreen
+    \qmlproperty bool MprisClient::canSetFullscreen
+    \brief Indicates whether the controlled player can go full screen
+
+    When true, the fullscreen property can be set to true to instruct
+    the controlled player to show its media on whole screen.
+*/
+
+/*!
+    \qmlproperty string MprisController::desktopEntry
+    \qmlproperty string MprisClient::desktopEntry
+    \brief Name of a desktop entry for the controller player
+
+    Provides a name for a desktop file that can be used to gain
+    additional information about the player.
+*/
+
+/*!
+    \qmlproperty bool MprisController::fullscreen
+    \qmlproperty bool MprisClient::fullscreen
+    \brief Indicates whether the controlled player is currently full screen
+
+    When true, the controlled player is showing its media using the whole
+    screen.
+*/
+
+/*!
+    \qmlproperty bool MprisController::hasTrackList
+    \qmlproperty bool MprisClient::hasTrackList
+    \brief Indicates whether the controlled player implements tracklist
+
+    When set to true, the controlled player implements tracklist feature.
+    This feature is currently not implemented by the library.
+*/
+
+/*!
+    \qmlproperty string MprisController::identity
+    \qmlproperty string MprisClient::identity
+    \brief A human readable name for the controlled player
+
+    A name advertised by the controller player. It should match one found
+    from the desktop file. The name may or may not be localised, for
+    localised names, using the desktop entry is safer.
+*/
+
+/*!
+    \qmlproperty list<string> MprisController::supportedUriSchemes
+    \qmlproperty list<string> MprisClient::supportedUriSchemes
+    \brief List of uri schemes the controlled player can handle
+
+    A list of strings indicating the uri schemes that can be opened
+    using the openUri method.
+*/
+
+/*!
+    \qmlproperty list<string> MprisController::supportedMimeTypes
+    \qmlproperty list<string> MprisClient::supportedMimeTypes
+    \brief List of mime types the controlled player can play
+
+    A list of strings indicating the media types that can be opened
+    using the openUri method.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canControl
+    \brief Indicates whether the player can be controlled
+
+    When set to false, no control of the player is expected to work,
+    only status can be read.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canGoNext
+    \qmlproperty bool MprisClient::canGoNext
+    \brief Indicates whether the controlled player can jump to next item
+
+    When set, the next method can be called to instruct the controlled player
+    to jump to next item on its playlist.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canGoPrevious
+    \qmlproperty bool MprisClient::canGoPrevious
+    \brief Indicates whether the player can jump the previous item
+
+    When set, the previous method can be called to instruct the controlled player
+    to jump to previous item on its playlist.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canPause
+    \qmlproperty bool MprisClient::canPause
+    \brief Indicates whether the controlled player can be paused
+
+    When set, the pause and playPause methods can be called to instruct the controlled player
+    to pause playback.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canPlay
+    \qmlproperty bool MprisClient::canPlay
+    \brief Indicates whether the controlled player can be started or resumed
+
+    When set, the play and playPause methods can be called to instruct the controlled player
+    to start or resume playback.
+*/
+
+/*!
+    \qmlproperty bool MprisController::canSeek
+    \qmlproperty bool MprisClient::canSeek
+    \brief Indicates whether the controlled player can seek in the current media
+
+    When set, the seek and setPosition methods  can be called to instruct the
+    controlled player to move within the currently playin media.
+*/
+
+/*!
+    \qmlproperty Amber::Mpris::LoopStatus MprisController::loopStatus
+    \qmlproperty Amber::Mpris::LoopStatus MprisClient::loopStatus
+    \brief Indicates the current looping mode of the controlled player
+
+    Set to either Mpris.None, Mpris.Track or Mpris.TrackList
+    indicating the current looping mode of the controlled player.
+
+    Defaults to Mpris.None.
+*/
+
+/*!
+    \qmlproperty double MprisController::maximumRate
+    \qmlproperty double MprisClient::maximumRate
+    \brief Indicates the maximum playback rate of the controlled player
+
+    Indicates the fastest playback speed the controlled player can use.
+*/
+
+/*!
+    \qmlproperty MprisMetaData *MprisController::metaData
+    \qmlproperty MprisMetaData *MprisClient::metaData
+    \brief An MprisMetaData object for the current media
+
+    The properties of the returned object can be used to obtain
+    information about the current media in the controlled player.
+*/
+
+/*!
+    \qmlproperty double MprisController::minimumRate
+    \qmlproperty double MprisClient::minimumRate
+    \brief Indicates the mininmum playback rate of the controlled player
+
+    Indicates the slowest playback speed the controlled player can use.
+*/
+
+/*!
+    \qmlproperty Amber::Mpris::PlaybackStatus MprisController::playbackStatus
+    \qmlproperty Amber::Mpris::PlaybackStatus MprisClient::playbackStatus
+    \brief Indicates the current status of the controlled player
+
+    Set to Mpris.Stopped, Mpris.Playing or Mpris.Paused to indicate
+    the current state of the controlled player.
+*/
+
+/*!
+    \qmlproperty int MprisController::position
+    \qmlproperty int MprisClient::position
+    \brief Indicates the position in current item in milliseconds
+
+    Set to the position in the current media, in milliseconds. The
+    rate at which this property is signalled can be adjusted with
+    the MprisClient::positionInterval property.
+
+    The changes are only emitted if the property change signal
+    is connected, hence the property should only be bound to when
+    actually used, preferably only when the application is visible.
+
+    \sa MprisClient::positionInterval
+*/
+
+/*!
+    \qmlproperty double MprisController::rate
+    \qmlproperty double MprisClient::rate
+    \brief Indicates the current playback rate of the controlled player
+
+    Set to a value representing the current relative playback speed;
+    e.x. 1.0 for normal speed, 2.0 for double speed.
+*/
+
+/*!
+    \qmlproperty bool MprisController::shuffle
+    \qmlproperty bool MprisClient::shuffle
+    \brief Indicates whether the playlist is played in random order
+
+    When true, the controlled player will play items on playlist in
+    random order, if false, they will be played in sequential order.
+*/
+
+/*!
+    \qmlproperty double MprisController::volume
+    \qmlproperty double MprisClient::volume
+    \brief Indicates the current playing volume of the controlled player
+
+    Set to a value indicating the audio volume currently empoyed, e.x.
+    1.0 for full volume, 0.5 for half.
+
+    Note that the values are player specific, the scale may be linear,
+    logarithmic or something totally different.
+*/
+
+/*!
+    \qmlmethod bool MprisController::next()
+    \qmlmethod bool MprisClient::next()
+    \brief Instructs the controlled player to move to next item
+
+    Signals the controlled player that it should move to the next
+    item on their playlist. The meaning of next may depend on the
+    shuffle property.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::openUri(url uri)
+    \qmlmethod bool MprisClient::openUri(url uri)
+    \brief Instructs the controlled player to move to open specified uri
+
+    Signals the controlled player that it should open the resource
+    identified by the specified uri. Whether the media is added to current
+    playlist or replaces it, is player specific.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::pause()
+    \qmlmethod bool MprisClient::pause()
+    \brief Instructs the controlled player to pause playback
+
+    Signals the controlled player that it should stop the playback
+    of the current media.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::play()
+    \qmlmethod bool MprisClient::play()
+    \brief Instructs the controlled player to resume or start playback
+
+    Signals the controlled player that it should resume or start playback.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::playPause()
+    \qmlmethod bool MprisClient::playPause()
+    \brief Instructs the controlled player to resume, start or pause playback
+
+    Signals the controlled player that it should resume or start playback if
+    not currently playing, or if currently playing, pause.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::previous()
+    \qmlmethod bool MprisClient::previous()
+    \brief Instructs the controlled player to move to previous item
+
+    Signals the controlled player that it should move to the previous
+    item on their playlist. The meaning of previous may depend on the
+    shuffle property.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::seek(int offset)
+    \qmlmethod bool MprisClient::seek(int offset)
+    \brief Instructs the controlled player to move within the current media
+
+    Signals the controlled player that it should move the playback position
+    of the current media by specified number of milliseconds.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::setPosition(int position)
+    \qmlmethod bool MprisClient::setPosition(int position)
+    \brief Instructs the controlled player to jump to position within the current media
+
+    Signals the controlled player that it should move they playback position
+    to specified location in milliseconds.
+
+    This is a convenience method over the two argument version.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::setPosition(string trackId, int position)
+    \qmlmethod bool MprisClient::setPosition(string trackId, int position)
+    \brief Instructs the controlled player to jump to position within the current media
+
+    Signals the controlled player that it should move they playback position
+    to specified location in milliseconds. The trackId must be the trackId of the
+    currently playing track.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
+
+/*!
+    \qmlmethod bool MprisController::stop()
+    \qmlmethod bool MprisClient::stop()
+    \brief Instructs the controlled player to stop playback
+
+    Signals the controlled player that it should stop playback.
+
+    Returns true if the request was successfully sent, remote
+    errors are not reported.
+*/
 
 #include "mpriscontroller.h"
 

@@ -1,0 +1,22 @@
+/*!
+\qmlmodule Amber.Mpris 1.0
+\title Amber.Mpris QML Types
+
+This module includes the following types:
+
+*/
+
+/*!
+\page index.html
+\title Amber MPRIS QML plugin
+\brief Provides QML types for media remote control
+
+The Amber.Mpris module provides types for controlling media
+applications, as well as for being controlled.
+It implements the Media Player Remote Interfacing Specification.
+
+The Amber.Mpris module includes the following types:
+
+\generatelist{qmltypesbymodule Amber.Mpris}
+
+*/

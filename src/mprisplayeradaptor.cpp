@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
