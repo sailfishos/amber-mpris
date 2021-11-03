@@ -1,9 +1,6 @@
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +19,7 @@
 
 
 import QtQuick 2.0
-import org.nemomobile.qtmpris 1.0
+import Amber.Mpris 1.0
 
 Item {
     id: mainItem
@@ -32,12 +29,15 @@ Item {
     Loader {
         id: controlsLoader
 
-        active: mprisManager.availableServices.length > 0
+        active: mprisController.availableServices.length > 0
 
-        Component.onCompleted: setSource("MprisControls.qml", { "mprisManager": mprisManager, "parent": mainItem })
+        Component.onCompleted: setSource("MprisControls.qml", { "mprisController": mprisController, "parent": mainItem })
 
-        MprisManager {
-            id: mprisManager
+        MprisController {
+            id: mprisController
+
+            onIdentityChanged: console.log(identity)
+            onCurrentServiceChanged: console.log(currentService)
         }
     }
 }

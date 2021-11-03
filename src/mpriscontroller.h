@@ -2,10 +2,7 @@
 
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,29 +23,31 @@
 #ifndef MPRISCONTROLLER_H
 #define MPRISCONTROLLER_H
 
-#include <mprisqt.h>
+#include <ambermpris.h>
 #include <Mpris>
+#include <MprisClient>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>
 
-#include <QtCore/QObject>
-#include <QtCore/QByteArray>
-#include <QtCore/QList>
-#include <QtCore/QMap>
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtCore/QVariant>
+#include <QList>
+#include <QObject>
+#include <QString>
+#include <QStringList>
 
+namespace Amber {
 
-class MprisRootInterface;
-class MprisPlayerInterface;
-class QDBusPendingCallWatcher;
-class MPRIS_QT_EXPORT MprisController : public QObject
+class MprisMetaData;
+class MprisControllerPrivate;
+
+class AMBER_MPRIS_EXPORT MprisController : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString service READ service)
+    Q_PROPERTY(bool singleService READ singleService WRITE setSingleService NOTIFY singleServiceChanged)
+    Q_PROPERTY(QString currentService READ currentService WRITE setCurrentService NOTIFY currentServiceChanged)
+    Q_PROPERTY(QStringList availableServices READ availableServices NOTIFY availableServicesChanged)
+    Q_PROPERTY(QList<QObject *> availableClients READ availableClients NOTIFY availableServicesChanged)
 
     // Mpris2 Root Interface
     Q_PROPERTY(bool canQuit READ canQuit NOTIFY canQuitChanged)
@@ -68,42 +67,45 @@ class MPRIS_QT_EXPORT MprisController : public QObject
     Q_PROPERTY(bool canPause READ canPause NOTIFY canPauseChanged)
     Q_PROPERTY(bool canPlay READ canPlay NOTIFY canPlayChanged)
     Q_PROPERTY(bool canSeek READ canSeek NOTIFY canSeekChanged)
-    Q_PROPERTY(Mpris::LoopStatus loopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
+    Q_PROPERTY(Amber::Mpris::LoopStatus loopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
     Q_PROPERTY(double maximumRate READ maximumRate NOTIFY maximumRateChanged)
-    Q_PROPERTY(QVariantMap metadata READ metadata NOTIFY metadataChanged)
+    Q_PROPERTY(Amber::MprisMetaData *metaData READ metaData NOTIFY metaDataChanged)
     Q_PROPERTY(double minimumRate READ minimumRate NOTIFY minimumRateChanged)
-    Q_PROPERTY(Mpris::PlaybackStatus playbackStatus READ playbackStatus NOTIFY playbackStatusChanged)
-    Q_PROPERTY(qlonglong position READ position)
+    Q_PROPERTY(Amber::Mpris::PlaybackStatus playbackStatus READ playbackStatus NOTIFY playbackStatusChanged)
+    Q_PROPERTY(qlonglong position READ position NOTIFY positionChanged)
     Q_PROPERTY(double rate READ rate WRITE setRate NOTIFY rateChanged)
     Q_PROPERTY(bool shuffle READ shuffle WRITE setShuffle NOTIFY shuffleChanged)
     Q_PROPERTY(double volume READ volume WRITE setVolume NOTIFY volumeChanged)
 
 public:
 
-    MprisController(const QString &service, const QDBusConnection &connection, QObject *parent = 0);
+    MprisController(QObject *parent = 0);
     ~MprisController();
 
-    bool isValid() const;
-
     // Mpris2 Root Interface
-    bool quit();
-    bool raise();
+    Q_INVOKABLE bool quit() const;
+    Q_INVOKABLE bool raise() const;
 
     // Mpris2 Player Interface
-    bool next();
-    bool openUri(const QUrl &uri);
-    bool pause();
-    bool play();
-    bool playPause();
-    bool previous();
-    bool seek(qlonglong offset);
-    bool setPosition(qlonglong position);
-    bool setPosition(const QString &aTrackId, qlonglong position);
-    bool stop();
+    Q_INVOKABLE bool next() const;
+    Q_INVOKABLE bool openUri(const QUrl &uri) const;
+    Q_INVOKABLE bool pause() const;
+    Q_INVOKABLE bool play() const;
+    Q_INVOKABLE bool playPause() const;
+    Q_INVOKABLE bool previous() const;
+    Q_INVOKABLE bool seek(qlonglong offset) const;
+    Q_INVOKABLE bool setPosition(qlonglong position) const;
+    Q_INVOKABLE bool setPosition(const QString &trackId, qlonglong position) const;
+    Q_INVOKABLE bool stop() const;
 
-public Q_SLOTS:
+    bool singleService() const;
+    void setSingleService(bool single);
 
-    QString service() const;
+    QString currentService() const;
+    void setCurrentService(const QString &service);
+
+    QStringList availableServices() const;
+    QList<QObject *> availableClients() const;
 
     // Mpris2 Root Interface
     bool canQuit() const;
@@ -143,7 +145,7 @@ public Q_SLOTS:
 
     double maximumRate() const;
 
-    QVariantMap metadata() const;
+    MprisMetaData *metaData() const;
 
     double minimumRate() const;
 
@@ -162,6 +164,9 @@ public Q_SLOTS:
     void setVolume(double volume);
 
 Q_SIGNALS:
+    void singleServiceChanged();
+    void currentServiceChanged();
+    void availableServicesChanged();
 
     // Mpris2 Root Interface
     void canQuitChanged();
@@ -183,7 +188,7 @@ Q_SIGNALS:
     void canSeekChanged();
     void loopStatusChanged();
     void maximumRateChanged();
-    void metadataChanged();
+    void metaDataChanged();
     void minimumRateChanged();
     void playbackStatusChanged();
     void positionChanged(qlonglong position);
@@ -192,21 +197,12 @@ Q_SIGNALS:
     void volumeChanged();
     void seeked(qlonglong position);
 
-protected Q_SLOTS:
-    void onAsyncGetAllRootPropertiesFinished();
-    void onAsyncGetAllPlayerPropertiesFinished();
-    void onCanControlChanged();
-    void onPositionChanged(qlonglong aPosition);
-    void onFinishedPendingCall(QDBusPendingCallWatcher *call);
+protected:
+    virtual void connectNotify(const QMetaMethod &method);
+    virtual void disconnectNotify(const QMetaMethod &method);
 
 private:
-    MprisRootInterface *m_mprisRootInterface;
-    MprisPlayerInterface *m_mprisPlayerInterface;
-
-    mutable bool m_initedRootInterface;
-    mutable bool m_initedPlayerInterface;
-    mutable bool m_requestedPosition;
-    bool m_canControlReceived;
+    MprisControllerPrivate *priv;
 };
-
+}
 #endif /* MPRISCONTROLLER_H */

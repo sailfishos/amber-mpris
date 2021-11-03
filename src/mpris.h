@@ -2,10 +2,7 @@
 
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,76 +23,33 @@
 #ifndef MPRIS_H
 #define MPRIS_H
 
-#include <mprisqt.h>
+#include <ambermpris.h>
 
-#include <QtCore/QObject>
-#include <QtCore/QString>
+#include <QObject>
+#include <QString>
 
-class MPRIS_QT_EXPORT Mpris : public QObject
+namespace Amber {
+class AMBER_MPRIS_EXPORT Mpris
 {
-    Q_OBJECT
-
-    Q_ENUMS(PlaybackStatus LoopStatus Metadata)
+    Q_GADGET
 
 public:
+    explicit Mpris();
 
     enum PlaybackStatus {
-        InvalidPlaybackStatus = -1,
+        Stopped,
         Playing,
-        Paused,
-        Stopped
+        Paused
     };
+    Q_ENUM(PlaybackStatus);
 
     enum LoopStatus {
-        InvalidLoopStatus = -1,
         None,
         Track,
         Playlist
     };
-
-    enum Metadata {
-        InvalidMetadata = -1,
-        TrackId,
-        Length,
-        ArtUrl,
-        Album,
-        AlbumArtist,
-        Artist,
-        AsText,
-        AudioBPM,
-        AutoRating,
-        Comment,
-        Composer,
-        ContentCreated,
-        DiscNumber,
-        FirstUsed,
-        Genre,
-        LastUsed,
-        Lyricist,
-        Title,
-        TrackNumber,
-        Url,
-        UseCount,
-        UserRating
-    };
-
-    Mpris(QObject *parent = 0);
-    ~Mpris();
-
-    Q_INVOKABLE static QString metadataToString(Metadata metadata);
-
-private:
-    template<class T, int N> static int arraySize(T (&)[N]) { return N; };
-    template<typename T, typename U> struct is_same { static const bool value = false; };
-    template<typename T> struct is_same<T,T> { static const bool value = true; };
-    template<typename T> static void getEnumStringsAndSize(const char ***strings, int *size);
-    template<typename T> static QString enumerationToString(T enumeration);
-    template<typename T> static T enumerationFromString(const QString &string);
-
-    friend class MprisRootAdaptor;
-    friend class MprisPlayerAdaptor;
-    friend class MprisPlayer;
-    friend class MprisController;
+    Q_ENUM(LoopStatus);
 };
+}
 
 #endif /* MPRIS_H */

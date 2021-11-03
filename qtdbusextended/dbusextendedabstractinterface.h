@@ -2,10 +2,7 @@
 
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +29,9 @@
 #include <QDBusError>
 
 class QDBusPendingCallWatcher;
+
+namespace Amber {
+namespace Private {
 class DBusExtendedPendingCallWatcher;
 
 class QT_DBUS_EXTENDED_EXPORT DBusExtendedAbstractInterface: public QDBusAbstractInterface
@@ -62,7 +62,7 @@ protected:
     void connectNotify(const QMetaMethod &signal);
     void disconnectNotify(const QMetaMethod &signal);
     QVariant internalPropGet(const char *propname, void *propertyPtr);
-    void internalPropSet(const char *propname, const QVariant &value, void *propertyPtr);
+    void internalPropSet(const char *propname, const QVariant &value);
 
 Q_SIGNALS:
     void propertyChanged(const QString &propertyName, const QVariant &value);
@@ -75,8 +75,8 @@ private Q_SLOTS:
     void onPropertiesChanged(const QString& interfaceName,
                              const QVariantMap& changedProperties,
                              const QStringList& invalidatedProperties);
-    void onAsyncPropertyFinished(DBusExtendedPendingCallWatcher *watcher);
-    void onAsyncSetPropertyFinished(DBusExtendedPendingCallWatcher *watcher);
+    void onAsyncPropertyFinished(QDBusPendingCallWatcher *watcher, const QString &propertyName);
+    void onAsyncSetPropertyFinished(QDBusPendingCallWatcher *watcher, const QString &propertyName, const QVariant value);
     void onAsyncGetAllPropertiesFinished(QDBusPendingCallWatcher *watcher);
 
 private:
@@ -90,5 +90,7 @@ private:
     QDBusError m_lastExtendedError;
     bool m_propertiesChangedConnected;
 };
+}
+}
 
 #endif /* DBUSEXTENDEDABSTRACTINTERFACE_H */

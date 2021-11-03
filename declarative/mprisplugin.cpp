@@ -2,10 +2,7 @@
 
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,13 +24,18 @@
 
 #include <Mpris>
 #include <MprisPlayer>
-#include <MprisManager>
+#include <MprisClient>
+#include <MprisController>
+#include <MprisMetaData>
+#include "declarativemprisplayer_p.h"
 
 #include <qqml.h>
 
-static QObject * api_factory(QQmlEngine *, QJSEngine *)
+using namespace Amber;
+
+template<class T> QObject *api_factory(QQmlEngine *, QJSEngine *)
 {
-    return new Mpris;
+    return new T;
 }
 
 MprisPlugin::MprisPlugin(QObject *parent) :
@@ -47,7 +49,10 @@ MprisPlugin::~MprisPlugin()
 
 void MprisPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterSingletonType<Mpris>(uri, 1, 0, "Mpris", api_factory);
-    qmlRegisterType<MprisPlayer>(uri, 1, 0, "MprisPlayer");
-    qmlRegisterType<MprisManager>(uri, 1, 0, "MprisManager");
+    qRegisterMetaType<QDBusObjectPath>();
+    qmlRegisterUncreatableType<Mpris>(uri, 1, 0, "Mpris", QStringLiteral("Mpris is a namespace object"));
+    qmlRegisterType<DeclarativeMprisPlayer>(uri, 1, 0, "MprisPlayer");
+    qmlRegisterType<MprisController>(uri, 1, 0, "MprisController");
+    qmlRegisterUncreatableType<MprisMetaData>(uri, 1, 0, "MprisMetaData", QStringLiteral("MprisMetaData can't be instantiated, use MprisPlayer or MprisManager"));
+    qmlRegisterUncreatableType<MprisClient>(uri, 1, 0, "MprisClient", QStringLiteral("MprisClient can't be instantiated, use MprisManager"));
 }

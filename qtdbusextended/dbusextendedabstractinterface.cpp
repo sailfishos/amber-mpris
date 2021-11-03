@@ -2,10 +2,7 @@
 
 /*!
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +20,6 @@
  */
 
 
-#include "dbusextendedpendingcallwatcher_p.h"
-
 #include <DBusExtendedAbstractInterface>
 
 #include <QtDBus/QDBusMetaType>
@@ -32,10 +27,12 @@
 #include <QtDBus/QDBusPendingCall>
 #include <QtDBus/QDBusPendingCallWatcher>
 #include <QtDBus/QDBusPendingReply>
+#include <QtDBus/QDBusVariant>
 
 #include <QtCore/QDebug>
 #include <QtCore/QMetaProperty>
 
+using namespace Amber::Private;
 
 Q_GLOBAL_STATIC_WITH_ARGS(QByteArray, dBusPropertiesInterface, ("org.freedesktop.DBus.Properties"))
 Q_GLOBAL_STATIC_WITH_ARGS(QByteArray, dBusPropertiesChangedSignal, ("PropertiesChanged"))
@@ -209,7 +206,7 @@ QVariant DBusExtendedAbstractInterface::internalPropGet(const char *propname, vo
     }
 }
 
-void DBusExtendedAbstractInterface::internalPropSet(const char *propname, const QVariant &value, void *propertyPtr)
+void DBusExtendedAbstractInterface::internalPropSet(const char *propname, const QVariant &value)
 {
     m_lastExtendedError = QDBusError();
 
@@ -243,7 +240,9 @@ void DBusExtendedAbstractInterface::internalPropSet(const char *propname, const 
             return;
         }
 
-        asyncSetProperty(propname, QVariant(metaProperty.type(), propertyPtr));
+        QVariant convertedValue(value);
+        convertedValue.convert(metaProperty.type());
+        asyncSetProperty(propname, convertedValue);
     }
 }
 
@@ -252,9 +251,9 @@ QVariant DBusExtendedAbstractInterface::asyncProperty(const QString &propertyNam
     QDBusMessage msg = QDBusMessage::createMethodCall(service(), path(), *dBusPropertiesInterface(), QStringLiteral("Get"));
     msg << interface() << propertyName;
     QDBusPendingReply<QVariant> async = connection().asyncCall(msg);
-    DBusExtendedPendingCallWatcher *watcher = new DBusExtendedPendingCallWatcher(async, propertyName, QVariant(), this);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
 
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(onAsyncPropertyFinished(QDBusPendingCallWatcher*)));
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, watcher, propertyName] { onAsyncPropertyFinished(watcher, propertyName); });
 
     return QVariant();
 }
@@ -262,38 +261,38 @@ QVariant DBusExtendedAbstractInterface::asyncProperty(const QString &propertyNam
 void DBusExtendedAbstractInterface::asyncSetProperty(const QString &propertyName, const QVariant &value)
 {
     QDBusMessage msg = QDBusMessage::createMethodCall(service(), path(), *dBusPropertiesInterface(), QStringLiteral("Set"));
-    msg << interface() << propertyName << value;
+    msg << interface() << propertyName << QVariant::fromValue(QDBusVariant(value));
     QDBusPendingReply<QVariant> async = connection().asyncCall(msg);
-    DBusExtendedPendingCallWatcher *watcher = new DBusExtendedPendingCallWatcher(async, propertyName, value, this);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(async, this);
 
-    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(onAsyncSetPropertyFinished(QDBusPendingCallWatcher*)));
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this, watcher, propertyName, value] { onAsyncSetPropertyFinished(watcher, propertyName, value); });
 }
 
-void DBusExtendedAbstractInterface::onAsyncPropertyFinished(DBusExtendedPendingCallWatcher *watcher)
+void DBusExtendedAbstractInterface::onAsyncPropertyFinished(QDBusPendingCallWatcher *watcher, const QString &propertyName)
 {
     QDBusPendingReply<QVariant> reply = *watcher;
 
     if (reply.isError()) {
         m_lastExtendedError = reply.error();
     } else {
-        int propertyIndex = metaObject()->indexOfProperty(watcher->asyncProperty().toLatin1().constData());
+        int propertyIndex = metaObject()->indexOfProperty(propertyName.toLatin1().constData());
         QVariant value = demarshall(interface(),
                                     metaObject()->property(propertyIndex),
                                     reply.value(),
                                     &m_lastExtendedError);
 
         if (m_lastExtendedError.isValid()) {
-            emit propertyInvalidated(watcher->asyncProperty());
+            emit propertyInvalidated(propertyName);
         } else {
-            emit propertyChanged(watcher->asyncProperty(), value);
+            emit propertyChanged(propertyName, value);
         }
     }
 
-    emit asyncPropertyFinished(watcher->asyncProperty());
+    emit asyncPropertyFinished(propertyName);
     watcher->deleteLater();
 }
 
-void DBusExtendedAbstractInterface::onAsyncSetPropertyFinished(DBusExtendedPendingCallWatcher *watcher)
+void DBusExtendedAbstractInterface::onAsyncSetPropertyFinished(QDBusPendingCallWatcher *watcher, const QString &propertyName, const QVariant value)
 {
     QDBusPendingReply<QVariant> reply = *watcher;
 
@@ -303,13 +302,13 @@ void DBusExtendedAbstractInterface::onAsyncSetPropertyFinished(DBusExtendedPendi
         m_lastExtendedError = QDBusError();
     }
 
-    emit asyncSetPropertyFinished(watcher->asyncProperty());
+    emit asyncSetPropertyFinished(propertyName);
 
     // Resetting the property to its previous value after sending the
     // finished signal
     if (reply.isError()) {
         m_lastExtendedError = QDBusError();
-        emit propertyChanged(watcher->asyncProperty(), watcher->previousValue());
+        emit propertyChanged(propertyName, value);
     }
 
     watcher->deleteLater();

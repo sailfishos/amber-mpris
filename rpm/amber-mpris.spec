@@ -1,10 +1,10 @@
-Name:       mpris-qt5
+Name:       amber-mpris
 
 Summary:    Qt and QML MPRIS interface and adaptor
-Version:    1.0.6
+Version:    1.1.0
 Release:    1
-License:    LGPLv2
-URL:        https://git.sailfishos.org/mer-core/qtmpris
+License:    LGPLv2+
+URL:        https://github.com/sailfishos/amber-mpris
 Source0:    %{name}-%{version}.tar.bz2
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -22,11 +22,11 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 Development files for %{name}.
 
-%package qml-plugin
+%package -n amber-qml-plugin-mpris
 Summary:    QML plugin for %{name}
 Requires:   %{name} = %{version}-%{release}
 
-%description qml-plugin
+%description -n amber-qml-plugin-mpris
 QML plugin for %{name}.
 
 %prep
@@ -54,22 +54,22 @@ rm -rf %{buildroot}
 
 %files devel
 %defattr(-,root,root,-)
-%{_datarootdir}/qt5/mkspecs/features/%{name}.prf
-%{_includedir}/qt5/MprisQt/Mpris
-%{_includedir}/qt5/MprisQt/MprisPlayer
-%{_includedir}/qt5/MprisQt/MprisController
-%{_includedir}/qt5/MprisQt/MprisManager
-%{_includedir}/qt5/MprisQt/mprisqt.h
-%{_includedir}/qt5/MprisQt/mpris.h
-%{_includedir}/qt5/MprisQt/mprisplayer.h
-%{_includedir}/qt5/MprisQt/mpriscontroller.h
-%{_includedir}/qt5/MprisQt/mprismanager.h
+%{_datarootdir}/qt5/mkspecs/features/ambermpris.prf
+%{_includedir}/AmberMpris/Mpris
+%{_includedir}/AmberMpris/MprisClient
+%{_includedir}/AmberMpris/MprisController
+%{_includedir}/AmberMpris/MprisPlayer
+%{_includedir}/AmberMpris/ambermpris.h
+%{_includedir}/AmberMpris/mpris.h
+%{_includedir}/AmberMpris/mprisclient.h
+%{_includedir}/AmberMpris/mpriscontroller.h
+%{_includedir}/AmberMpris/mprisplayer.h
 %{_libdir}/lib*.so
-%{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/pkgconfig/*.pc
 
 
-%files qml-plugin
+%files -n amber-qml-plugin-mpris
 %defattr(-,root,root,-)
-%{_libdir}/qt5/qml/org/nemomobile/mpris/libmpris-qt5-qml-plugin.so
-%{_libdir}/qt5/qml/org/nemomobile/mpris/plugins.qmltypes
-%{_libdir}/qt5/qml/org/nemomobile/mpris/qmldir
+%{_libdir}/qt5/qml/Amber/Mpris/libambermprisplugin.so
+%{_libdir}/qt5/qml/Amber/Mpris/plugins.qmltypes
+%{_libdir}/qt5/qml/Amber/Mpris/qmldir

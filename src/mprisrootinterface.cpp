@@ -1,11 +1,6 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
- * Copyright (C) 2015 Jolla Ltd.
- *
- * Contact: Valerio Valerio <valerio.valerio@jolla.com>
- * Author: Andres Gomez <andres.gomez@jolla.com>
+ * Copyright (C) 2015-2021 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +18,11 @@
  */
 
 
-#include "mpriscontroller_p.h"
+#include "mprisclient_p.h"
 
 #include <QtCore/QtDebug>
 
+using namespace Amber;
 
 /*
  * Implementation of interface class MprisRootInterface
@@ -86,7 +82,7 @@ void MprisRootInterface::onPropertyChanged(const QString &propertyName, const QV
             Q_EMIT hasTrackListChanged(m_hasTrackList);
         }
     } else if (propertyName == QStringLiteral("Identity")) {
-        QString identity= value.toString();
+        QString identity = value.toString();
         if (m_identity != identity) {
             m_identity = identity;
             Q_EMIT identityChanged(m_identity);

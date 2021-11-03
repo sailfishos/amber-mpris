@@ -7,8 +7,6 @@ QT = core dbus
 
 TARGET = $${MPRISQTLIB}
 
-QMAKE_SUBSTITUTES = $${TARGET}.prf.in
-
 DEFINES += MPRIS_QT_LIBRARY
 
 use_system_dbus {
@@ -26,40 +24,47 @@ CONFIG += create_pc create_prl no_install_prl
 
 SOURCES += \
     mpris.cpp \
-    mprisrootadaptor.cpp \
-    mprisplayeradaptor.cpp \
-    mprisplayer.cpp \
+    mprisclient.cpp \
     mpriscontroller.cpp \
-    mprismanager.cpp \
+    mprismetadata.cpp \
+    mprisplayer.cpp \
+    mprisplayeradaptor.cpp \
     mprisplayerinterface.cpp \
-    mprisrootinterface.cpp
+    mprisrootinterface.cpp \
+    mprisserviceadaptor.cpp
 
 HEADERS += \
-    mprisqt.h \
     mpris.h \
+    mprisclient.h \
+    mprisclient_p.h \
+    mpriscontroller.h \
+    mprismetadata.h \
+    mprismetadata_p.h \
+    mprisplayeradaptor_p.h \
     mprisplayer.h \
     mprisplayer_p.h \
-    mpriscontroller.h \
-    mpriscontroller_p.h \
-    mprismanager.h
+    ambermpris.h \
+    ambermpris_p.h \
+    mprisserviceadaptor_p.h
 
 INSTALL_HEADERS = \
     Mpris \
     MprisPlayer \
+    MprisClient \
     MprisController \
-    MprisManager \
-    mprisqt.h \
     mpris.h \
-    mprisplayer.h \
+    mprisclient.h \
     mpriscontroller.h \
-    mprismanager.h
+    mprisplayer.h \
+    ambermpris.h
 
-OTHER_FILES += org.mpris.MediaPlayer2.xml \
+OTHER_FILES += \
+    org.mpris.MediaPlayer2.xml \
     org.mpris.MediaPlayer2.Player.xml
 
 target.path = $$[QT_INSTALL_LIBS]
 headers.files = $$INSTALL_HEADERS
-headers.path = $$[QT_INSTALL_HEADERS]/MprisQt
+headers.path = /usr/include/AmberMpris
 prf.files = $${TARGET}.prf
 prf.path = $$[QMAKE_MKSPECS]/features
 INSTALLS += target headers prf
@@ -68,4 +73,4 @@ QMAKE_PKGCONFIG_REQUIRES = Qt5Core Qt5DBus
 QMAKE_PKGCONFIG_LIBDIR = $$target.path
 QMAKE_PKGCONFIG_INCDIR = $$headers.path
 QMAKE_PKGCONFIG_DESTDIR = pkgconfig
-QMAKE_PKGCONFIG_NAME = MprisQt
+QMAKE_PKGCONFIG_NAME = AmberMpris

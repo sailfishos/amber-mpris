@@ -1,6 +1,4 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
  * Copyright (C) 2015-2021 Jolla Ltd.
  *
@@ -20,25 +18,13 @@
  */
 
 
-#ifndef MPRIS_PLUGIN_H
-#define MPRIS_PLUGIN_H
+#ifndef AMBERMPRIS_H
+#define AMBERMPRIS_H
 
-#include <QQmlExtensionPlugin>
-#include <QtGlobal>
+#if defined(AMBER_MPRIS_LIBRARY)
+#  define AMBER_MPRIS_EXPORT Q_DECL_EXPORT
+#else
+#  define AMBER_MPRIS_EXPORT Q_DECL_IMPORT
+#endif
 
-namespace Amber {
-class MprisPlugin : public QQmlExtensionPlugin
-{
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID "Amber.Mpris")
-
-public:
-    MprisPlugin(QObject *parent = 0);
-    ~MprisPlugin();
-
-    virtual void registerTypes(const char *uri);
-};
-}
-
-
-#endif /* MPRIS_PLUGIN_H */
+#endif /* AMBERMPRIS_H */
