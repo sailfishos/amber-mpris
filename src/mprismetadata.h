@@ -37,8 +37,7 @@ class AMBER_MPRIS_EXPORT MprisMetaData : public QObject
     Q_PROPERTY(QVariant trackId READ trackId WRITE setTrackId NOTIFY metaDataChanged)
 
     Q_PROPERTY(QVariant duration READ duration WRITE setDuration NOTIFY metaDataChanged)
-    Q_PROPERTY(QVariant coverArtUrlSmall READ coverArtUrlSmall WRITE setCoverArtUrlSmall NOTIFY metaDataChanged)
-    Q_PROPERTY(QVariant coverArtUrlLarge READ coverArtUrlLarge WRITE setCoverArtUrlLarge NOTIFY metaDataChanged)
+    Q_PROPERTY(QVariant artUrl READ artUrl WRITE setArtUrl NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant albumTitle READ albumTitle WRITE setAlbumTitle NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant albumArtist READ albumArtist WRITE setAlbumArtist NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant contributingArtist READ contributingArtist WRITE setContributingArtist NOTIFY metaDataChanged)
@@ -49,7 +48,7 @@ class AMBER_MPRIS_EXPORT MprisMetaData : public QObject
     Q_PROPERTY(QVariant composer READ composer WRITE setComposer NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant year READ year WRITE setYear NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant date READ date WRITE setDate NOTIFY metaDataChanged)
-    Q_PROPERTY(QVariant chapterNumber READ chapterNumber WRITE setChapterNumber NOTIFY metaDataChanged)
+    Q_PROPERTY(QVariant discNumber READ discNumber WRITE setDiscNumber NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant firstUsed READ firstUsed WRITE setFirstUsed NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant genre READ genre WRITE setGenre NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant lastUsed READ lastUsed WRITE setLastUsed NOTIFY metaDataChanged)
@@ -72,10 +71,8 @@ public:
 
     QVariant duration() const;
     void setDuration(const QVariant &duration);
-    QVariant coverArtUrlSmall() const;
-    void setCoverArtUrlSmall(const QVariant &url);
-    QVariant coverArtUrlLarge() const;
-    void setCoverArtUrlLarge(const QVariant &url);
+    QVariant artUrl() const;
+    void setArtUrl(const QVariant &url);
     QVariant albumTitle() const;
     void setAlbumTitle(const QVariant &title);
     QVariant albumArtist() const;
@@ -93,8 +90,8 @@ public:
     void setYear(const QVariant &year);
     QVariant date() const;
     void setDate(const QVariant &date);
-    QVariant chapterNumber() const;
-    void setChapterNumber(const QVariant &chapter);
+    QVariant discNumber() const;
+    void setDiscNumber(const QVariant &disc);
 
     QVariant genre() const;
     void setGenre(const QVariant &genre);

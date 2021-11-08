@@ -11,6 +11,7 @@ Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Qml)
+BuildRequires:  sailfish-qdoc-template
 
 %description
 %{summary}.
@@ -26,8 +27,15 @@ Development files for %{name}.
 Summary:    QML plugin for %{name}
 Requires:   %{name} = %{version}-%{release}
 
+%package -n amber-qml-plugin-mpris-doc
+Summary:    QML plugin for %{name} documentation
+BuildArch: noarch
+
 %description -n amber-qml-plugin-mpris
 QML plugin for %{name}.
+
+%description -n amber-qml-plugin-mpris-doc
+QML plugin for %{name} documentation.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -67,9 +75,12 @@ rm -rf %{buildroot}
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*.pc
 
-
 %files -n amber-qml-plugin-mpris
 %defattr(-,root,root,-)
 %{_libdir}/qt5/qml/Amber/Mpris/libambermprisplugin.so
 %{_libdir}/qt5/qml/Amber/Mpris/plugins.qmltypes
 %{_libdir}/qt5/qml/Amber/Mpris/qmldir
+
+%files -n amber-qml-plugin-mpris-doc
+%defattr(-,root,root,-)
+%{_datadir}/doc/amber-mpris/ambermpris.qch

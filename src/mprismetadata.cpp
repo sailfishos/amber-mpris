@@ -1,6 +1,4 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
  * Copyright (C) 2021 Jolla Ltd.
  *
@@ -18,6 +16,200 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
+/*!
+    \qmltype MprisMetaData
+    \inqmlmodule Amber.Mpris
+    \brief Provides media metadata information
+
+    Provides access to information about media content.
+
+    All properties may be undefined if not applicable or known.
+    A default trackId will be returned if one is not defined.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::trackId
+    \brief Identifies the track inside a playlist
+
+    Identifier for the current track, must be formatted as a valid DBus
+    object path. No object needs to be registered on the path.
+
+    Maps to MPRIS property 'mpris:trackid'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::duration
+    \brief Length of the media in milliseconds
+
+    Maps top MPRIS property 'mpris.length'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::artUrl
+    \brief URL of an image representing the media
+
+    Maps to MPRIS property 'mpris:artUrl'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::albumTitle
+    \brief Title of the album of the media
+
+    The name of an album the media is a part of, or undefined
+    if not applicable or known.
+    Maps to MPRIS property 'xesam:album'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::albumArtist
+    \brief Artist of the album of the media
+
+    The artist of an album the media is part of.
+    Maps to MPRIS property 'xesam:albumArtist'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::contributingArtist
+    \brief Artist or artists who contributed the media
+
+    The artist or artists who have made the media.
+    Eg. band, DJ, singer, director.
+    Maps to MPRIS property 'xesam:artist'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::lyrics
+    \brief Lyrics of the media
+
+    Maps to MPRIS property 'xesam:asText'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::audioBpm
+    \brief Beats per minute of audio
+
+    Maps to MPRIS property 'xesam:audioBPM'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::autoRating
+    \brief An automatic rating for the media
+
+    A rating for the media decided via automated means in the range [0, 1].
+
+    Maps to MPRIS property 'xesam:autoRating'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::comment
+    \brief A list of free form comments about the media.
+
+    Maps to MPRIS property 'xesam:comment'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::composer
+    \brief List of composers of the media.
+
+    Maps to MPRIS property 'xesam:composer'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::year
+    \brief The year the media was produced.
+
+    Convenience accessor for setting or getting the year part of the date
+    property. Commonly only the year part of the date is meaningful.
+
+    \sa MprisMetaData::date
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::date
+    \brief The date the media was produced.
+
+    Maps to MPRIS property 'xesam:contentCreated'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::discNumber
+    \brief
+
+    Maps to MPRIS property 'xesam:discNumber'
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::firstUsed
+    \brief The date the media was played for the first time.
+
+    Maps to MPRIS property 'xesam:firstUsed'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::genre
+    \brief List of genres the media represents.
+
+    Maps to MPRIS property 'xesam:genre'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::lastUsed
+    \brief The date the media was played latest.
+
+    Maps to MPRIS propery 'xesam:lastUsed'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::writer
+    \brief The author of the lyrics/script of the media.
+
+    Maps to MPRIS property 'xesam:lyricist'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::title
+    \brief The title of the media.
+
+    Maps to MPRIS propery 'xesam:title'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::trackNumber
+    \brief The index of the media on an album.
+
+    Maps to MPRIS property 'xesam:trackNumber'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::url
+    \brief The url where the media is located.
+
+    Maps to MPRIS property 'xesam:url'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::useCount
+    \brief The number of times the media has been played.
+
+    Maps to MPRIS property 'xesam:useCount'.
+*/
+
+/*!
+    \qmlproperty var MprisMetaData::userRating
+    \brief A manual rating for the media.
+
+    A rating the user has assigned to the media in range [0, 1].
+*/
+
+/*!
+    \qmlproperty QtObject MprisMetaData::fillFrom
+    \brief An object to fill the meta data from.
+    \internal
+
+    Sets an object from where the meta data fields can be filled from.
+    All matching properties will be read and bound to.
+*/
 
 #include <QVariant>
 #include <QTimer>
@@ -60,7 +252,6 @@ namespace {
     const QString MetaFieldUserRating = QStringLiteral("xesam:userRating");
 
     const QString MetaFieldInternalYear = QStringLiteral("year");
-    const QString MetaFieldInternalArtUrlSmall = QStringLiteral("artUrlSmall");
 
     const QString TrackObjectPathPrefix = QStringLiteral("/org/mpris/MediaPlayer2/TrackList/");
 
@@ -78,6 +269,7 @@ namespace {
         QDateTime d = from.toDateTime();
         return d.toString(Qt::ISODate);
     }
+
     template<> QVariant ensureType<QDBusObjectPath>(const QVariant &from)
     {
         QString path;
@@ -184,10 +376,6 @@ QVariantMap MprisMetaDataPrivate::typedMetaData() const
                 QDateTime d = QDateTime::fromString(QStringLiteral("%1-01-02T00:00:00Z").arg(c.value().toString()), Qt::ISODate);
                 rv[MetaFieldContentCreated] = d.toString(Qt::ISODate);
             }
-        } else if (c.key() == MetaFieldInternalArtUrlSmall) {
-            if (!m_metaData.contains(MetaFieldArtUrl)) {
-                rv[MetaFieldArtUrl] = c.value();
-            }
         } else if (c.key().count(':') == 1 && !c.key().startsWith(QLatin1String("mpris:")) && !c.key().startsWith(QLatin1String("xesam:"))) {
             rv[c.key()] = c.value();
         }
@@ -261,24 +449,12 @@ void MprisMetaData::setDuration(const QVariant &duration)
         priv->setMetaData(MetaFieldLength, duration);
 }
 
-QVariant MprisMetaData::coverArtUrlSmall() const
-{
-    return priv->m_metaData.contains(MetaFieldInternalArtUrlSmall) ?
-        priv->m_metaData.value(MetaFieldInternalArtUrlSmall) :
-        priv->m_metaData.value(MetaFieldArtUrl);
-}
-
-void MprisMetaData::setCoverArtUrlSmall(const QVariant &url)
-{
-    priv->setMetaData(MetaFieldInternalArtUrlSmall, url);
-}
-
-QVariant MprisMetaData::coverArtUrlLarge() const
+QVariant MprisMetaData::artUrl() const
 {
     return priv->m_metaData.value(MetaFieldArtUrl);
 }
 
-void MprisMetaData::setCoverArtUrlLarge(const QVariant &url)
+void MprisMetaData::setArtUrl(const QVariant &url)
 {
     priv->setMetaData(MetaFieldArtUrl, url);
 }
@@ -375,12 +551,12 @@ void MprisMetaData::setDate(const QVariant &date)
     priv->setMetaData(MetaFieldContentCreated, date);
 }
 
-QVariant MprisMetaData::chapterNumber() const
+QVariant MprisMetaData::discNumber() const
 {
     return priv->m_metaData.value(MetaFieldDiscNumber);
 }
 
-void MprisMetaData::setChapterNumber(const QVariant &chapter)
+void MprisMetaData::setDiscNumber(const QVariant &chapter)
 {
     priv->setMetaData(MetaFieldDiscNumber, chapter);
 }

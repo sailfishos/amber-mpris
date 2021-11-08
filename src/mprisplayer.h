@@ -1,6 +1,4 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
  * Copyright (C) 2015-2021 Jolla Ltd.
  *
@@ -157,7 +155,7 @@ Q_SIGNALS:
     void shuffleRequested(bool shuffle);
     void volumeRequested(double volume);
     void nextRequested();
-    void openUriRequested(const QUrl &url);
+    void openUriRequested(const QUrl &uri);
     void pauseRequested();
     void playRequested();
     void playPauseRequested();

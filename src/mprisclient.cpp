@@ -1,6 +1,4 @@
-// -*- c++ -*-
-
-/*!
+/*
  *
  * Copyright (C) 2015-2021 Jolla Ltd.
  *
@@ -18,6 +16,43 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
+/*!
+    \qmltype MprisClient
+    \inqmlmodule Amber.Mpris
+    \brief Remote controls a specific media player
+    \internal
+
+    MprisClient provides ability to remotely control a certain media player
+    via the MPRIS API.
+
+    MprisClient can not be instantiated directly, but only through
+    MprisController.availableClients. Note that the lifetime of a
+    MprisClient is only as long as it is on the availableClients
+    list.
+*/
+
+/*!
+    \qmlproperty bool MprisClient::canControl
+    \brief Indicates whether the player can be controlled
+
+    When set to false, no control of the player is expected to work,
+    only status can be read.
+
+    According to the specification, this should not change value after
+    the controller becomes valid, but the library does not prevent it.
+*/
+
+/*!
+    \qmlproperty int MprisClient::positionInterval
+    \brief Controls the emission rate of MprisClient::position notifications
+
+    Indicates, in milliseconds, how often the MprisClient::position property
+    changes are notified. Defaults to 1000 ms.
+
+    Note that the playback rate is not taken into consideration, hence the
+    change in position may not be proportional to the interval.
+*/
 
 
 #include "mprisclient.h"
