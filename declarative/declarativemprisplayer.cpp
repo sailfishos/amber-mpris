@@ -201,10 +201,10 @@ using namespace Amber;
     \qmlproperty int MprisPlayer::loopStatus
     \brief Indicates the current looping mode of the player
 
-    Should be set to either Mpris.None, Mpris.Track or Mpris.TrackList
+    Should be set to either Mpris.LoopNone, Mpris.LoopTrack or Mpris.LoopTrackList
     to indicate the current looping mode of the player.
 
-    Defaults to Mpris.None.
+    Defaults to Mpris.LoopNone.
 */
 
 /*!
