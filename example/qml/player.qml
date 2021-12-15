@@ -171,7 +171,7 @@ Item {
         canSeek: false
 
         playbackStatus: Mpris.Stopped
-        loopStatus: Mpris.None
+        loopStatus: Mpris.LoopNone
         shuffle: false
         volume: 1
 
@@ -192,9 +192,9 @@ Item {
         onOpenUriRequested: message.lastMessage = "Requested to open uri \"" + url + "\""
 
         onLoopStatusRequested: {
-            if (loopStatus == Mpris.None) {
+            if (loopStatus == Mpris.LoopNone) {
                 repeatSwitch.checked = false
-            } else if (loopStatus == Mpris.Playlist) {
+            } else if (loopStatus == Mpris.LoopPlaylist) {
                 repeatSwitch.checked = true
             }
         }

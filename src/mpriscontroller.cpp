@@ -230,10 +230,10 @@
     \qmlproperty Amber::Mpris::LoopStatus MprisClient::loopStatus
     \brief Indicates the current looping mode of the controlled player
 
-    Set to either Mpris.None, Mpris.Track or Mpris.TrackList
+    Set to either Mpris.LoopNone, Mpris.LoopTrack or Mpris.LoopTrackList
     indicating the current looping mode of the controlled player.
 
-    Defaults to Mpris.None.
+    Defaults to Mpris.LoopNone.
 */
 
 /*!
@@ -774,7 +774,7 @@ bool MprisController::canSeek() const
 
 Mpris::LoopStatus MprisController::loopStatus() const
 {
-    return priv->m_currentClient ? priv->m_currentClient->loopStatus() : Mpris::None;
+    return priv->m_currentClient ? priv->m_currentClient->loopStatus() : Mpris::LoopNone;
 }
 
 void MprisController::setLoopStatus(Mpris::LoopStatus loopStatus)

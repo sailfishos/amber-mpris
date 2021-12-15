@@ -44,9 +44,12 @@ public:
     Q_ENUM(PlaybackStatus);
 
     enum LoopStatus {
-        None,
-        Track,
-        Playlist
+        LoopNone,
+        LoopTrack,
+        LoopPlaylist,
+        None = LoopNone, // this and the following deprecated
+        Track = LoopTrack,
+        Playlist = LoopPlaylist
     };
     Q_ENUM(LoopStatus);
 };

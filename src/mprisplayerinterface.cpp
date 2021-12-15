@@ -38,7 +38,7 @@ MprisPlayerInterface::MprisPlayerInterface(const QString &service, const QString
     , m_canPause(false)
     , m_canPlay(false)
     , m_canSeek(false)
-    , m_loopStatus(Mpris::None)
+    , m_loopStatus(Mpris::LoopNone)
     , m_maximumRate(1)
     , m_minimumRate(1)
     , m_playbackStatus(Mpris::Stopped)
