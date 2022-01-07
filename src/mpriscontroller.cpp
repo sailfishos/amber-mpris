@@ -979,16 +979,19 @@ void MprisControllerPrivate::onServiceVanished(const QString &service)
     }
 
     m_availableClients.removeOne(client);
-    m_otherPlayingClients.removeOne(client);
-    Q_EMIT parent()->availableServicesChanged();
 
     if (m_currentClient == client) {
         if (m_singleService || m_availableClients.isEmpty()) {
             setCurrentClient(nullptr);
+        } else if (!m_otherPlayingClients.isEmpty()) {
+            setCurrentClient(m_otherPlayingClients[0]);
         } else {
             setCurrentClient(m_availableClients[0]);
         }
     }
+    m_otherPlayingClients.removeOne(client);
+
+    Q_EMIT parent()->availableServicesChanged();
 
     if (client) {
         client->deleteLater();
