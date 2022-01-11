@@ -23,8 +23,8 @@ MprisPlayer {
 
     canControl: true
 
-    canGoNext: playlist && playlist.currentIndex < playlist.itemCount - 1 || loopStatus != Mpris.None
-    canGoPrevious: playlist && playlist.currentIndex > 0 || loopStatus != Mpris.None
+    canGoNext: playlist && playlist.currentIndex < playlist.itemCount - 1 || loopStatus != Mpris.LoopNone
+    canGoPrevious: playlist && playlist.currentIndex > 0 || loopStatus != Mpris.LoopNone
 
     canPlay: player.playbackState != Mpris.Playing && (player.source || playlist.itemCount)
     canPause: player.playbackState == Mpris.Playing
@@ -54,19 +54,19 @@ MprisPlayer {
 
     loopStatus: {
         if (!playlist) {
-            return Mpris.None
+            return Mpris.LoopNone
         } else if (playlist.playbackMode == Playlist.Random) {
-            return Mpris.Playlist
+            return Mpris.LoopPlaylist
         }
 
         _oldLoopStatus = playlist.playbackMode
 
         if (playlist.playbackMode == Playlist.CurrentItemInLoop) {
-            return Mpris.Track
+            return Mpris.LoopTrack
         } else if (playlist.playbackMode == Playlist.Loop) {
-            return Mpris.Playlist
+            return Mpris.LoopPlaylist
         } else {
-            return Mpris.None
+            return Mpris.LoopNone
         }
     }
 
@@ -84,9 +84,9 @@ MprisPlayer {
         if (!playlist) {
             return
         }
-        if (loopStatus == Mpris.Track) {
+        if (loopStatus == Mpris.LoopTrack) {
             playlist.playbackMode = Playlist.CurrentItemInLoop
-        } else if (loopStatus == Mpris.Playlist) {
+        } else if (loopStatus == Mpris.LoopPlaylist) {
             playlist.playbackMode = Playlist.Loop
         } else {
             playlist.playbackMode = Playlist.Sequential

@@ -50,7 +50,7 @@ MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     , m_canPause(false)
     , m_canPlay(false)
     , m_canSeek(false)
-    , m_loopStatus(Mpris::None)
+    , m_loopStatus(Mpris::LoopNone)
     , m_maximumRate(1)
     , m_minimumRate(1)
     , m_playbackStatus(Mpris::Stopped)
@@ -93,21 +93,38 @@ qlonglong MprisPlayerPrivate::position() const
 
 void MprisPlayerPrivate::setLoopStatus(const QString &value)
 {
-    bool ok;
-    int enumVal = QMetaEnum::fromType<Mpris::LoopStatus>().keyToValue(value.toUtf8(), &ok);
+    int enumVal;
+    bool ok = true;
 
-    if (!ok) {
-        sendErrorReply(QDBusError::InvalidArgs, QStringLiteral("Invalid loop status"));
-        return;
+    if (value == QLatin1String("None")) {
+        enumVal = Mpris::LoopNone;
+    } else if (value == QLatin1String("Track")) {
+        enumVal = Mpris::LoopTrack;
+    } else if (value == QLatin1String("Playlist")) {
+        enumVal = Mpris::LoopPlaylist;
+    } else {
+        ok = false;
     }
 
-    Q_EMIT parent()->loopStatusRequested(enumVal);
+    if (ok) {
+        Q_EMIT parent()->loopStatusRequested(enumVal);
+    } else {
+        sendErrorReply(QDBusError::InvalidArgs, QStringLiteral("Invalid loop status"));
+    }
 }
 
 QString MprisPlayerPrivate::loopStatus() const
 {
-    const char *strVal = QMetaEnum::fromType<Mpris::LoopStatus>().valueToKey(static_cast<int>(parent()->loopStatus()));
-    return QString::fromLatin1(strVal);
+    switch (parent()->loopStatus()) {
+    case Mpris::LoopNone:
+        return QLatin1String("None");
+    case Mpris::LoopTrack:
+        return QLatin1String("Track");
+    case Mpris::LoopPlaylist:
+        return QLatin1String("Playlist");
+    default:
+        return QString();
+    }
 }
 
 QString MprisPlayerPrivate::playbackStatus() const

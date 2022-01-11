@@ -513,7 +513,7 @@ Mpris::LoopStatus MprisClient::loopStatus() const
         return static_cast<Mpris::LoopStatus>(enumVal);
     }
 
-    return Mpris::None;
+    return Mpris::LoopNone;
 }
 
 void MprisClient::setLoopStatus(Mpris::LoopStatus loopStatus)
