@@ -52,10 +52,12 @@ INSTALL_HEADERS = \
     MprisPlayer \
     MprisClient \
     MprisController \
+    MprisMetaData \
     mpris.h \
     mprisclient.h \
     mpriscontroller.h \
     mprisplayer.h \
+    mprismetadata.h \
     ambermpris.h
 
 OTHER_FILES += \
