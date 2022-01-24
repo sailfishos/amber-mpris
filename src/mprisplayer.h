@@ -92,7 +92,7 @@ public:
     bool shuffle() const;
     double volume() const;
 
-    void setServiceName(const QString &serviceName);
+    virtual void setServiceName(const QString &serviceName);
     void setCanQuit(bool canQuit);
     void setCanRaise(bool canRaise);
     void setCanSetFullscreen(bool canSetFullscreen);

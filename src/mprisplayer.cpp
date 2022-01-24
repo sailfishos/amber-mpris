@@ -582,9 +582,9 @@ void MprisPlayer::setServiceName(const QString &serviceName)
         priv->m_connection = new QDBusConnection(QDBusConnection::connectToBus(dbusConnectionType(), serviceName));
 
         if (!serviceName.startsWith(QLatin1String("org.mpris.MediaPlayer2."))) {
-            priv->m_serviceName = QStringLiteral("%1.%2.instance%3").arg(QLatin1String("org.mpris.MediaPlayer2")).arg(serviceName).arg(QCoreApplication::applicationPid());
+            priv->m_serviceName = QStringLiteral("org.mpris.MediaPlayer2.%1").arg(serviceName);
         } else {
-            priv->m_serviceName = QStringLiteral("%1.instance%2").arg(serviceName).arg(QCoreApplication::applicationPid());
+            priv->m_serviceName = serviceName;
         }
 
         priv->m_connection->registerService(priv->m_serviceName);
