@@ -67,11 +67,13 @@ rm -rf %{buildroot}
 %{_includedir}/AmberMpris/MprisClient
 %{_includedir}/AmberMpris/MprisController
 %{_includedir}/AmberMpris/MprisPlayer
+%{_includedir}/AmberMpris/MprisMetaData
 %{_includedir}/AmberMpris/ambermpris.h
 %{_includedir}/AmberMpris/mpris.h
 %{_includedir}/AmberMpris/mprisclient.h
 %{_includedir}/AmberMpris/mpriscontroller.h
 %{_includedir}/AmberMpris/mprisplayer.h
+%{_includedir}/AmberMpris/mprismetadata.h
 %{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*.pc
 
