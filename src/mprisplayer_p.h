@@ -74,6 +74,7 @@ public:
     double m_rate;
     bool m_shuffle;
     double m_volume;
+    bool m_inPositionRequested;
 
 public:
     qlonglong position() const;

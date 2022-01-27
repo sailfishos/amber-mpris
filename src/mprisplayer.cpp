@@ -58,6 +58,7 @@ MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     , m_rate(1.0)
     , m_shuffle(false)
     , m_volume(0.0)
+    , m_inPositionRequested(false)
 {
     m_changedDelay.setSingleShot(true);
     m_changedDelay.setInterval(50);
@@ -378,10 +379,22 @@ Mpris::PlaybackStatus MprisPlayer::playbackStatus() const
 {
     return priv->m_playbackStatus;
 }
+
 qlonglong MprisPlayer::position() const
 {
+    // If position() is called from positionRequested handler, we would
+    // end up in an infinite recursion loop. Avoid it and spew out a warning.
+    if (!priv->m_inPositionRequested) {
+        priv->m_inPositionRequested = true;
+        Q_EMIT const_cast<MprisPlayer *>(this)->positionRequested();
+        priv->m_inPositionRequested = false;
+    } else {
+        qWarning() << "Recursion loop detected in MprisPlayer::position";
+    }
+
     return priv->m_position;
 }
+
 double MprisPlayer::rate() const
 {
     return priv->m_rate;

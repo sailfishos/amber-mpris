@@ -32,10 +32,6 @@ class AMBER_MPRIS_EXPORT DeclarativeMprisPlayer : public MprisPlayer
 
 public:
     virtual void setServiceName(const QString &serviceName);
-    virtual qlonglong position() const;
-
-Q_SIGNALS:
-    void positionRequested();
 };
 }
 

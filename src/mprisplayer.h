@@ -150,6 +150,7 @@ Q_SIGNALS:
     void shuffleChanged();
     void volumeChanged();
 
+    void positionRequested();
     void loopStatusRequested(int loopStatus);
     void rateRequested(double rate);
     void shuffleRequested(bool shuffle);
