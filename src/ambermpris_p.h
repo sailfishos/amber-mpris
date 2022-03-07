@@ -31,4 +31,13 @@ static inline QDBusConnection getDBusConnection()
 #endif
 }
 
+static inline QDBusConnection::BusType dbusConnectionType()
+{
+#ifdef USE_SYSTEM_DBUS
+    return QDBusConnection::SystemBus;
+#else
+    return QDBusConnection::SessionBus;
+#endif
+}
+
 #endif

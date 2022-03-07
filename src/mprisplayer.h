@@ -92,7 +92,7 @@ public:
     bool shuffle() const;
     double volume() const;
 
-    void setServiceName(const QString &serviceName);
+    virtual void setServiceName(const QString &serviceName);
     void setCanQuit(bool canQuit);
     void setCanRaise(bool canRaise);
     void setCanSetFullscreen(bool canSetFullscreen);
@@ -150,6 +150,7 @@ Q_SIGNALS:
     void shuffleChanged();
     void volumeChanged();
 
+    void positionRequested();
     void loopStatusRequested(int loopStatus);
     void rateRequested(double rate);
     void shuffleRequested(bool shuffle);

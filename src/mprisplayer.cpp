@@ -35,7 +35,7 @@ namespace {
 
 MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     : QObject(parent)
-    , m_connection(getDBusConnection())
+    , m_connection(nullptr)
     , m_serviceAdaptor(this)
     , m_playerAdaptor(this)
     , m_canQuit(false)
@@ -58,6 +58,7 @@ MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     , m_rate(1.0)
     , m_shuffle(false)
     , m_volume(0.0)
+    , m_inPositionRequested(false)
 {
     m_changedDelay.setSingleShot(true);
     m_changedDelay.setInterval(50);
@@ -69,6 +70,12 @@ MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
 
 MprisPlayerPrivate::~MprisPlayerPrivate()
 {
+    if (m_connection) {
+        m_connection->unregisterObject(QStringLiteral("/org/mpris/MediaPlayer2"));
+        m_connection->unregisterService(m_serviceName);
+        QDBusConnection::disconnectFromBus(m_connection->name());
+        delete m_connection;
+    }
 }
 
 MprisPlayer *MprisPlayerPrivate::parent() const
@@ -291,7 +298,7 @@ void MprisPlayerPrivate::emitPropertiesChanged()
         msg << QVariant::fromValue(i.value().first);
         msg << QStringList(i.value().second.values());
 
-        m_connection.send(msg);
+        m_connection->send(msg);
     }
 
     m_changedProperties.clear();
@@ -372,10 +379,22 @@ Mpris::PlaybackStatus MprisPlayer::playbackStatus() const
 {
     return priv->m_playbackStatus;
 }
+
 qlonglong MprisPlayer::position() const
 {
+    // If position() is called from positionRequested handler, we would
+    // end up in an infinite recursion loop. Avoid it and spew out a warning.
+    if (!priv->m_inPositionRequested) {
+        priv->m_inPositionRequested = true;
+        Q_EMIT const_cast<MprisPlayer *>(this)->positionRequested();
+        priv->m_inPositionRequested = false;
+    } else {
+        qWarning() << "Recursion loop detected in MprisPlayer::position";
+    }
+
     return priv->m_position;
 }
+
 double MprisPlayer::rate() const
 {
     return priv->m_rate;
@@ -565,19 +584,24 @@ QStringList MprisPlayer::supportedMimeTypes() const
 void MprisPlayer::setServiceName(const QString &serviceName)
 {
     if (!priv->m_serviceName.isEmpty()) {
-        priv->m_connection.unregisterObject(QStringLiteral("/org/mpris/MediaPlayer2"));
-        priv->m_connection.unregisterService(priv->m_serviceName);
+        priv->m_connection->unregisterObject(QStringLiteral("/org/mpris/MediaPlayer2"));
+        priv->m_connection->unregisterService(priv->m_serviceName);
+        QDBusConnection::disconnectFromBus(priv->m_connection->name());
+        delete priv->m_connection;
+        priv->m_connection = nullptr;
     }
 
     if (!serviceName.isEmpty()) {
+        priv->m_connection = new QDBusConnection(QDBusConnection::connectToBus(dbusConnectionType(), serviceName));
+
         if (!serviceName.startsWith(QLatin1String("org.mpris.MediaPlayer2."))) {
-            priv->m_serviceName = QStringLiteral("%1.%2.instance%3").arg(QLatin1String("org.mpris.MediaPlayer2")).arg(serviceName).arg(QCoreApplication::applicationPid());
+            priv->m_serviceName = QStringLiteral("org.mpris.MediaPlayer2.%1").arg(serviceName);
         } else {
-            priv->m_serviceName = QStringLiteral("%1.instance%2").arg(serviceName).arg(QCoreApplication::applicationPid());
+            priv->m_serviceName = serviceName;
         }
 
-        priv->m_connection.registerService(priv->m_serviceName);
-        priv->m_connection.registerObject(QStringLiteral("/org/mpris/MediaPlayer2"), priv);
+        priv->m_connection->registerService(priv->m_serviceName);
+        priv->m_connection->registerObject(QStringLiteral("/org/mpris/MediaPlayer2"), priv);
     } else {
         priv->m_serviceName = serviceName;
     }

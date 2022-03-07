@@ -18,6 +18,7 @@
  */
 
 #include <QVariant>
+#include <QCoreApplication>
 #include "declarativemprisplayer_p.h"
 
 using namespace Amber;
@@ -437,9 +438,7 @@ using namespace Amber;
     playback.
 */
 
-qlonglong DeclarativeMprisPlayer::position() const
+void DeclarativeMprisPlayer::setServiceName(const QString &serviceName)
 {
-    Q_EMIT const_cast<DeclarativeMprisPlayer *>(this)->positionRequested();
-
-    return MprisPlayer::position();
+    MprisPlayer::setServiceName(QStringLiteral("%1.instance%2").arg(serviceName).arg(QCoreApplication::applicationPid()));
 }

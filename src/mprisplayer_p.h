@@ -42,7 +42,7 @@ public:
     void quit();
     void raise();
 
-    QDBusConnection m_connection;
+    QDBusConnection *m_connection;
     MprisServiceAdaptor m_serviceAdaptor;
     MprisPlayerAdaptor m_playerAdaptor;
 
@@ -74,6 +74,7 @@ public:
     double m_rate;
     bool m_shuffle;
     double m_volume;
+    bool m_inPositionRequested;
 
 public:
     qlonglong position() const;
