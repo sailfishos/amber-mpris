@@ -695,7 +695,7 @@ void MprisClientPrivate::onMetadataChanged()
     if (oldTrackId != m_metaData.trackId()) {
         m_lastPosition = 0;
         m_positionElapsed.start();
-        Q_EMIT parent()->positionChanged(parent()->position());
+        Q_EMIT parent()->metaDataChanged();
     }
 }
 
