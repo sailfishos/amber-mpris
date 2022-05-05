@@ -1124,7 +1124,6 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     bool oldCanSeek = parent()->canSeek();
     Mpris::LoopStatus oldLoopStatus = parent()->loopStatus();
     double oldMaximumRate = parent()->maximumRate();
-    const MprisMetaData *oldMetaData = parent()->metaData();
     double oldMinimumRate = parent()->minimumRate();
     Mpris::PlaybackStatus oldPlaybackStatus = parent()->playbackStatus();
     double oldRate = parent()->rate();
@@ -1185,9 +1184,6 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     if (oldMaximumRate != parent()->maximumRate()) {
         Q_EMIT parent()->maximumRateChanged();
     }
-    if (oldMetaData != parent()->metaData()) {
-        Q_EMIT parent()->metaDataChanged();
-    }
     if (oldMinimumRate != parent()->minimumRate()) {
         Q_EMIT parent()->minimumRateChanged();
     }
@@ -1234,6 +1230,8 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
         connect(m_currentClient, &MprisClient::shuffleChanged, parent(), &MprisController::shuffleChanged);
         connect(m_currentClient, &MprisClient::volumeChanged, parent(), &MprisController::volumeChanged);
         connect(m_currentClient, &MprisClient::seeked, parent(), &MprisController::seeked);
+
+        connect(m_currentClient, &MprisClient::metaDataChanged, parent(), &MprisController::metaDataChanged);
 
         if (m_currentClient->playbackStatus() == Mpris::Playing) {
             m_otherPlayingClients.removeOne(m_currentClient);
