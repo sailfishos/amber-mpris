@@ -376,7 +376,7 @@ QVariantMap MprisMetaDataPrivate::typedMetaData() const
                 QDateTime d = QDateTime::fromString(QStringLiteral("%1-01-02T00:00:00Z").arg(c.value().toString()), Qt::ISODate);
                 rv[MetaFieldContentCreated] = d.toString(Qt::ISODate);
             }
-        } else if (c.key().count(':') == 1 && !c.key().startsWith(QLatin1String("mpris:")) && !c.key().startsWith(QLatin1String("xesam:"))) {
+        } else if (c.key().count(':') == 1) {
             rv[c.key()] = c.value();
         }
     }
@@ -390,14 +390,15 @@ QVariantMap MprisMetaDataPrivate::typedMetaData() const
 
 void MprisMetaDataPrivate::setMetaData(const QString &key, const QVariant &value)
 {
-    if (m_metaData.value(key) != value) {
-        if (!value.isValid() || value.isNull()) {
-            m_metaData.remove(key);
-        } else {
+    if (!value.isValid() || value.isNull()) {
+            if (!m_metaData.remove(key))
+                    return;
+    } else if (m_metaData.value(key) != value) {
             m_metaData[key] = value;
-        }
-        m_changedDelay.start();
+    } else {
+            return;
     }
+    m_changedDelay.start();
 }
 
 void MprisMetaDataPrivate::setMetaData(const QVariantMap &metaData)
@@ -743,7 +744,7 @@ QVariantMap MprisMetaData::extraFields() const
     for (auto c = priv->m_metaData.cbegin();
          c != priv->m_metaData.cend();
          ++c) {
-        if (c.key().count(':') == 1 && !c.key().startsWith(QLatin1String("mpris:")) && !c.key().startsWith(QLatin1String("xesam:"))) {
+        if (c.key().count(':') == 1 && !converters.contains(c.key())) { // MetaFieldInternalYear has no namespace
             rv[c.key()] = c.value();
         }
     }
@@ -751,13 +752,27 @@ QVariantMap MprisMetaData::extraFields() const
     return rv;
 }
 
+QVariant MprisMetaData::extraField(const QString &key) const
+{
+    if (priv->m_metaData.contains(key) && !converters.contains(key) && key != MetaFieldInternalYear) {
+        return priv->m_metaData[key];
+    } else {
+        return QVariant();
+    }
+}
+
 void MprisMetaData::setExtraFields(const QVariantMap &fields)
 {
     for (auto c = fields.cbegin();
          c != fields.cend();
          ++c) {
-        if (c.key().count(':') == 1 && !c.key().startsWith(QLatin1String("mpris:")) && !c.key().startsWith(QLatin1String("xesam:"))) {
-            priv->m_metaData[c.key()] = c.value();
-        }
+        setExtraField(c.key(), c.value());
+    }
+}
+
+void MprisMetaData::setExtraField(const QString &key, const QVariant &value)
+{
+    if (!converters.contains(key) && key.count(':') == 1) {
+        priv->setMetaData(key, value);
     }
 }
