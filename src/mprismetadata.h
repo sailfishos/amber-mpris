@@ -121,7 +121,9 @@ public:
     void setUseCount(const QVariant &count);
 
     QVariantMap extraFields() const;
+    QVariant extraField(const QString &key) const;
     void setExtraFields(const QVariantMap &fields);
+    void setExtraField(const QString &key, const QVariant &value);
 
     QVariant fillFrom() const;
     void setFillFrom(const QVariant &fillFrom);
