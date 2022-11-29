@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2022 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,9 +69,12 @@
 #include <QMetaEnum>
 
 #include <QDebug>
+#include <QLoggingCategory>
 
 namespace {
     const QString mprisObjectPath = QStringLiteral("/org/mpris/MediaPlayer2");
+
+    Q_LOGGING_CATEGORY(lcClient, "org.amber.mpris.client", QtWarningMsg)
 }
 
 using namespace Amber;
@@ -227,7 +230,7 @@ void MprisClient::setPositionInterval(int interval)
 bool MprisClient::quit()
 {
     if (!canQuit()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -239,7 +242,7 @@ bool MprisClient::quit()
 bool MprisClient::raise()
 {
     if (!canRaise()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -252,7 +255,7 @@ bool MprisClient::raise()
 bool MprisClient::next()
 {
     if (!canGoNext()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -264,12 +267,12 @@ bool MprisClient::next()
 bool MprisClient::openUri(const QUrl &uri)
 {
     if (!canControl()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
     if (!uri.isValid()) {
-        qDebug() << Q_FUNC_INFO << "The uri is invalid";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The uri is invalid";
         return false;
     }
 
@@ -281,7 +284,7 @@ bool MprisClient::openUri(const QUrl &uri)
 bool MprisClient::pause()
 {
     if (!canPause()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -293,7 +296,7 @@ bool MprisClient::pause()
 bool MprisClient::play()
 {
     if (!canPlay()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -305,7 +308,7 @@ bool MprisClient::play()
 bool MprisClient::playPause()
 {
     if (!canPlay() && !canPause()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -317,7 +320,7 @@ bool MprisClient::playPause()
 bool MprisClient::previous()
 {
     if (!canGoPrevious()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -329,7 +332,7 @@ bool MprisClient::previous()
 bool MprisClient::seek(qlonglong offset)
 {
     if (!canSeek()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -341,13 +344,13 @@ bool MprisClient::seek(qlonglong offset)
 bool MprisClient::setPosition(qlonglong position)
 {
     if (!canSeek()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
     QVariant trackId = metaData()->trackId();
     if (!trackId.isValid()) {
-        qDebug() << Q_FUNC_INFO << "Unknown trackId in which to set the position";
+        qCDebug(lcClient) << Q_FUNC_INFO << "Unknown trackId in which to set the position";
         return false;
     }
 
@@ -357,13 +360,13 @@ bool MprisClient::setPosition(qlonglong position)
 bool MprisClient::setPosition(const QString &aTrackId, qlonglong position)
 {
     if (!canSeek()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
     QDBusObjectPath trackId(aTrackId);
     if (trackId.path().isEmpty()) {
-        qDebug() << Q_FUNC_INFO << "trackId doesn't map to a valid DBus object path";
+        qCDebug(lcClient) << Q_FUNC_INFO << "trackId doesn't map to a valid DBus object path";
         return false;
     }
 
@@ -372,7 +375,7 @@ bool MprisClient::setPosition(const QString &aTrackId, qlonglong position)
         qlonglong reportedLength = length.toLongLong();
 
         if (position < 0 || position > reportedLength) {
-            qDebug() << Q_FUNC_INFO << "Requested position out of range";
+            qCDebug(lcClient) << Q_FUNC_INFO << "Requested position out of range";
             return false;
         }
     }
@@ -385,7 +388,7 @@ bool MprisClient::setPosition(const QString &aTrackId, qlonglong position)
 bool MprisClient::stop()
 {
     if (!canControl()) {
-        qDebug() << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
         return false;
     }
 
@@ -567,8 +570,8 @@ void MprisClient::requestPosition() const
     priv->m_mprisPlayerInterface.position();
     priv->m_mprisPlayerInterface.setUseCache(true);
     if (priv->m_mprisPlayerInterface.lastExtendedError().isValid()) {
-        qWarning() << Q_FUNC_INFO
-                   << "Failed requesting the current position in the MPRIS2 Player Interface!!!";
+        qCWarning(lcClient) << Q_FUNC_INFO
+                            << "Failed requesting the current position in the MPRIS2 Player Interface!!!";
         return;
     }
     priv->m_requestedPosition = true;
@@ -631,9 +634,9 @@ void MprisClient::disconnectNotify(const QMetaMethod &method)
 void MprisClientPrivate::onAsyncGetAllRootPropertiesFinished()
 {
     if (m_mprisRootInterface.lastExtendedError().isValid()) {
-        qWarning() << Q_FUNC_INFO
-                   << "Error" << m_mprisRootInterface.lastExtendedError().name()
-                   << "happened:" << m_mprisRootInterface.lastExtendedError().message();
+        qCWarning(lcClient) << Q_FUNC_INFO
+                            << "Error" << m_mprisRootInterface.lastExtendedError().name()
+                            << "happened:" << m_mprisRootInterface.lastExtendedError().message();
         return;
     }
 
@@ -647,9 +650,9 @@ void MprisClientPrivate::onAsyncGetAllRootPropertiesFinished()
 void MprisClientPrivate::onAsyncGetAllPlayerPropertiesFinished()
 {
     if (m_mprisPlayerInterface.lastExtendedError().isValid()) {
-        qWarning() << Q_FUNC_INFO
-                   << "Error" << m_mprisPlayerInterface.lastExtendedError().name()
-                   << "happened:" << m_mprisPlayerInterface.lastExtendedError().message();
+        qCWarning(lcClient) << Q_FUNC_INFO
+                            << "Error" << m_mprisPlayerInterface.lastExtendedError().name()
+                            << "happened:" << m_mprisPlayerInterface.lastExtendedError().message();
         return;
     }
 
@@ -679,8 +682,8 @@ void MprisClientPrivate::onCanControlChanged()
         Q_EMIT parent()->canPauseChanged();
         Q_EMIT parent()->canPlayChanged();
         Q_EMIT parent()->canSeekChanged();
-        qWarning() << Q_FUNC_INFO
-                   << "CanControl is not supposed to change its value!";
+        qCWarning(lcClient) << Q_FUNC_INFO
+                            << "CanControl is not supposed to change its value!";
         return;
     }
 
@@ -753,9 +756,9 @@ void MprisClientPrivate::onFinishedPendingCall(QDBusPendingCallWatcher *call)
 {
     QDBusPendingReply<> reply = *call;
     if (reply.isError()) {
-        qWarning() << Q_FUNC_INFO
-                   << "Error" << reply.error().name()
-                   << "happened:" << reply.error().message();
+        qCWarning(lcClient) << Q_FUNC_INFO
+                            << "Error" << reply.error().name()
+                            << "happened:" << reply.error().message();
     }
 
     call->deleteLater();

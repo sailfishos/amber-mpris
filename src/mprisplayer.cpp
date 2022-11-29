@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2022 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,12 +25,16 @@
 #include "mprismetadata.h"
 #include "ambermpris_p.h"
 
+#include <QLoggingCategory>
+
 using namespace Amber;
 
 namespace {
     const QString PlayerInterface = MprisPlayerAdaptor::staticMetaObject.classInfo(MprisPlayerAdaptor::staticMetaObject.indexOfClassInfo("D-Bus Interface")).value();
     const QString ServiceInterface = MprisServiceAdaptor::staticMetaObject.classInfo(MprisPlayerAdaptor::staticMetaObject.indexOfClassInfo("D-Bus Interface")).value();
     const QString TrackPrefix = QStringLiteral("/org/mpris/MediaPlayer2/TrackList/");
+
+    Q_LOGGING_CATEGORY(lcPlayer, "org.amber.mpris.player", QtWarningMsg)
 }
 
 MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
@@ -389,7 +393,7 @@ qlonglong MprisPlayer::position() const
         Q_EMIT const_cast<MprisPlayer *>(this)->positionRequested();
         priv->m_inPositionRequested = false;
     } else {
-        qWarning() << "Recursion loop detected in MprisPlayer::position";
+        qCWarning(lcPlayer) << "Recursion loop detected in MprisPlayer::position";
     }
 
     return priv->m_position;
