@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2022 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -453,6 +453,7 @@
 #include <QSharedPointer>
 
 #include <QDebug>
+#include <QLoggingCategory>
 
 using namespace Amber;
 
@@ -462,6 +463,8 @@ namespace {
     const QString dBusObjectPath = QStringLiteral("/org/freedesktop/DBus");
     const QString dBusInterface = QStringLiteral("org.freedesktop.DBus");
     const QString dBusNameOwnerChangedSignal = QStringLiteral("NameOwnerChanged");
+
+    Q_LOGGING_CATEGORY(lcController, "amber.mpris.controller", QtWarningMsg)
 }
 
 namespace Amber {
@@ -509,7 +512,7 @@ MprisControllerPrivate::MprisControllerPrivate(MprisController *parent)
     , m_positionConnected(0)
 {
     if (!m_connection.isConnected()) {
-        qWarning() << "Mpris: Failed attempting to connect to DBus";
+        qCWarning(lcController) << "Mpris: Failed attempting to connect to DBus";
         return;
     }
 
@@ -646,7 +649,7 @@ QString MprisController::currentService() const
 void MprisController::setCurrentService(const QString &service)
 {
     if (!service.startsWith(mprisNameSpace)) {
-        qWarning() << "Mpris:" << service << "is not a proper Mpris2 service";
+        qCWarning(lcController) << "Mpris:" << service << "is not a proper Mpris2 service";
         return;
     }
 
@@ -1248,7 +1251,7 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
 bool MprisControllerPrivate::checkClient(const char *callerName) const
 {
     if (!m_currentClient) {
-        qWarning() << callerName << "None service available/selected";
+        qCWarning(lcController) << callerName << "None service available/selected";
         return false;
     }
 

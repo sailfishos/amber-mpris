@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2022 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,11 +18,14 @@
  */
 
 
+#include <QLoggingCategory>
 #include "mprisclient_p.h"
 
-#include <QtCore/QtDebug>
-
 using namespace Amber;
+
+namespace {
+    Q_LOGGING_CATEGORY(lcIface, "amber.mpris.iface", QtWarningMsg)
+}
 
 /*
  * Implementation of interface class MprisRootInterface
@@ -100,9 +103,9 @@ void MprisRootInterface::onPropertyChanged(const QString &propertyName, const QV
             Q_EMIT supportedUriSchemesChanged(m_supportedMimeTypes);
         }
     } else {
-        qWarning() << Q_FUNC_INFO
-                   << "Received PropertyChanged signal from unknown property: "
-                   << propertyName;
+        qCWarning(lcIface) << Q_FUNC_INFO
+                           << "Received PropertyChanged signal from unknown property: "
+                           << propertyName;
     }
 }
 
