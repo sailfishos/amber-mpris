@@ -41,8 +41,11 @@
 #include <QString>
 #include <QStringList>
 #include <QVariant>
+#include <QMetaEnum>
 #include <QDBusConnection>
 #include <QDBusPendingReply>
+
+#include "mpris.h"
 
 namespace Amber {
 /*
@@ -177,10 +180,19 @@ public:
     { return qvariant_cast< bool >(internalPropGet("CanSeek", &m_canSeek)); }
 
     Q_PROPERTY(QString LoopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
+    inline Mpris::LoopStatus internalLoopStatus()
+    { return qvariant_cast< Mpris::LoopStatus >(internalPropGet("LoopStatus", &m_loopStatus)); }
     inline QString loopStatus()
-    { return qvariant_cast< QString >(internalPropGet("LoopStatus", &m_loopStatus)); }
+    { return QString::fromLatin1(QMetaEnum::fromType<Mpris::LoopStatus>().valueToKey(internalLoopStatus())); }
+    inline void internalSetLoopStatus(Mpris::LoopStatus loopStatus)
+    { internalPropSet("LoopStatus", QVariant::fromValue(loopStatus)); }
     inline void setLoopStatus(const QString &value)
-    { internalPropSet("LoopStatus", QVariant::fromValue(value)); }
+    {
+        bool ok = false;
+        int loopStatus = QMetaEnum::fromType<Mpris::LoopStatus>().keyToValue(value.toLatin1(), &ok);
+        if (ok)
+            internalSetLoopStatus(static_cast<Mpris::LoopStatus>(loopStatus));
+    }
 
     Q_PROPERTY(double MaximumRate READ maximumRate NOTIFY maximumRateChanged)
     inline double maximumRate()
@@ -196,7 +208,9 @@ public:
 
     Q_PROPERTY(QString PlaybackStatus READ playbackStatus NOTIFY playbackStatusChanged)
     inline QString playbackStatus()
-    { return qvariant_cast< QString >(internalPropGet("PlaybackStatus", &m_playbackStatus)); }
+    { return QString::fromLatin1(QMetaEnum::fromType<Mpris::PlaybackStatus>().valueToKey(internalPlaybackStatus())); }
+    inline Mpris::PlaybackStatus internalPlaybackStatus()
+    { return qvariant_cast< Mpris::PlaybackStatus >(internalPropGet("PlaybackStatus", &m_playbackStatus)); }
 
     Q_PROPERTY(qlonglong Position READ position NOTIFY positionChanged)
     inline qlonglong position()
@@ -306,11 +320,11 @@ private:
     bool m_canPause;
     bool m_canPlay;
     bool m_canSeek;
-    QString m_loopStatus;
+    Mpris::LoopStatus m_loopStatus;
     double m_maximumRate;
     QVariantMap m_metadata;
     double m_minimumRate;
-    QString m_playbackStatus;
+    Mpris::PlaybackStatus m_playbackStatus;
     qlonglong m_position;
     double m_rate;
     bool m_shuffle;

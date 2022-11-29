@@ -516,20 +516,12 @@ bool MprisClient::canSeek() const
 
 Mpris::LoopStatus MprisClient::loopStatus() const
 {
-    bool ok;
-    int enumVal = QMetaEnum::fromType<Mpris::LoopStatus>().keyToValue(priv->m_mprisPlayerInterface.loopStatus().toUtf8(), &ok);
-
-    if (ok) {
-        return static_cast<Mpris::LoopStatus>(enumVal);
-    }
-
-    return Mpris::LoopNone;
+    return priv->m_mprisPlayerInterface.internalLoopStatus();
 }
 
 void MprisClient::setLoopStatus(Mpris::LoopStatus loopStatus)
 {
-    const char *strVal = QMetaEnum::fromType<Mpris::LoopStatus>().valueToKey(loopStatus);
-    priv->m_mprisPlayerInterface.setLoopStatus(QString::fromLatin1(strVal));
+    priv->m_mprisPlayerInterface.internalSetLoopStatus(loopStatus);
 }
 
 double MprisClient::maximumRate() const
@@ -549,14 +541,7 @@ double MprisClient::minimumRate() const
 
 Mpris::PlaybackStatus MprisClient::playbackStatus() const
 {
-    bool ok;
-    int enumVal = QMetaEnum::fromType<Mpris::PlaybackStatus>().keyToValue(priv->m_mprisPlayerInterface.playbackStatus().toUtf8(), &ok);
-
-    if (ok) {
-        return static_cast<Mpris::PlaybackStatus>(enumVal);
-    }
-
-    return Mpris::Stopped;
+    return priv->m_mprisPlayerInterface.internalPlaybackStatus();
 }
 
 qlonglong MprisClient::position() const

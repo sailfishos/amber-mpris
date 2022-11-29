@@ -18,6 +18,7 @@
  */
 
 #include <QLoggingCategory>
+#include <QMetaEnum>
 #include "mprisclient_p.h"
 #include "mpris.h"
 
@@ -95,10 +96,12 @@ void MprisPlayerInterface::onPropertyChanged(const QString &propertyName, const 
             Q_EMIT canSeekChanged(m_canSeek);
         }
     } else if (propertyName == QStringLiteral("LoopStatus")) {
-        QString loopStatus = value.toString();
-        if (m_loopStatus != loopStatus) {
-            m_loopStatus = loopStatus;
-            Q_EMIT loopStatusChanged(m_loopStatus);
+        auto metaEnum = QMetaEnum::fromType<Mpris::LoopStatus>();
+        bool ok = false;
+        int loopStatus = metaEnum.keyToValue(value.toString().toLatin1(), &ok);
+        if (ok && m_loopStatus != loopStatus) {
+            m_loopStatus = static_cast<Mpris::LoopStatus>(loopStatus);
+            Q_EMIT loopStatusChanged(QString::fromLatin1(metaEnum.valueToKey(m_loopStatus)));
         }
     } else if (propertyName == QStringLiteral("MaximumRate")) {
         bool maximumRate = value.toDouble();
@@ -119,10 +122,12 @@ void MprisPlayerInterface::onPropertyChanged(const QString &propertyName, const 
             Q_EMIT minimumRateChanged(m_minimumRate);
         }
     } else if (propertyName == QStringLiteral("PlaybackStatus")) {
-        QString playbackStatus = value.toString();
-        if (m_playbackStatus != playbackStatus) {
-            m_playbackStatus = playbackStatus;
-            Q_EMIT playbackStatusChanged(m_playbackStatus);
+        auto metaEnum = QMetaEnum::fromType<Mpris::PlaybackStatus>();
+        bool ok = false;
+        int playbackStatus = metaEnum.keyToValue(value.toString().toLatin1(), &ok);
+        if (ok && m_playbackStatus != playbackStatus) {
+            m_playbackStatus = static_cast<Mpris::PlaybackStatus>(playbackStatus);
+            Q_EMIT playbackStatusChanged(QString::fromLatin1(metaEnum.valueToKey(m_playbackStatus)));
         }
     } else if (propertyName == QStringLiteral("Position")) {
         qlonglong position = value.toLongLong();
