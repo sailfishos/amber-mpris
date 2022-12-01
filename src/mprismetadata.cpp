@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2021 Jolla Ltd.
+ * Copyright (C) 2021-2022 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -221,6 +221,7 @@
 #include <QDBusObjectPath>
 
 #include <QDebug>
+#include <QLoggingCategory>
 
 #include "mprismetadata.h"
 #include "mprismetadata_p.h"
@@ -228,6 +229,8 @@
 using namespace Amber;
 
 namespace {
+    Q_LOGGING_CATEGORY(lcMetaData, "amber.mpris.metadata", QtWarningMsg)
+
     const QString MetaFieldTrackId = QStringLiteral("mpris:trackid");
     const QString MetaFieldLength = QStringLiteral("mpris:length");
     const QString MetaFieldArtUrl = QStringLiteral("mpris:artUrl");
@@ -272,9 +275,15 @@ namespace {
 
     template<> QVariant ensureType<QDBusObjectPath>(const QVariant &from)
     {
-        QString path;
+        if (from.type() == (unsigned int)qMetaTypeId<QDBusObjectPath>())
+            return from;
 
-        if (from.isNull()) {
+        QString path;
+        bool canConvert = from.canConvert<QString>();
+
+        if (from.isNull() || !canConvert) {
+            if (!canConvert)
+                qCWarning(lcMetaData) << "Cannot convert path to string! Using NoTrack path!";
             path = TrackObjectPathPrefix + QLatin1String("NoTrack");
         } else {
             path = from.toString();
@@ -418,7 +427,11 @@ MprisMetaData::MprisMetaData(QObject *parent)
 QVariant MprisMetaData::trackId() const
 {
     if (priv->m_metaData.contains(MetaFieldTrackId)) {
-        QString trackId = priv->m_metaData[MetaFieldTrackId].toString();
+        QString trackId;
+        if (priv->m_metaData[MetaFieldTrackId].type() == (unsigned int)qMetaTypeId<QDBusObjectPath>())
+            trackId = priv->m_metaData[MetaFieldTrackId].value<QDBusObjectPath>().path();
+        else // Just assume that it is a string or we can convert it to a string
+            trackId = priv->m_metaData[MetaFieldTrackId].toString();
         if (trackId.startsWith(TrackObjectPathPrefix)) {
             return trackId.mid(TrackObjectPathPrefix.size());
         }
@@ -715,7 +728,7 @@ void MprisMetaData::setFillFrom(const QVariant &fillFrom)
             }
         }
     } else {
-        if (fillFrom.userType() == qMetaTypeId<QVariantMap>()) {
+        if (fillFrom.userType() == (unsigned int)qMetaTypeId<QVariantMap>()) {
             QVariantMap map = fillFrom.toMap();
             for (auto i = map.cbegin();
                  i != map.cend();

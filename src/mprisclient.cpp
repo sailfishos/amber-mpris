@@ -75,6 +75,13 @@ namespace {
     const QString mprisObjectPath = QStringLiteral("/org/mpris/MediaPlayer2");
 
     Q_LOGGING_CATEGORY(lcClient, "amber.mpris.client", QtWarningMsg)
+
+    QString trackIdAsString(const QVariant &trackId)
+    {
+        if (trackId.type() == (unsigned int)qMetaTypeId<QDBusObjectPath>())
+            return trackId.value<QDBusObjectPath>().path();
+        return trackId.toString();
+    }
 }
 
 using namespace Amber;
@@ -354,7 +361,7 @@ bool MprisClient::setPosition(qlonglong position)
         return false;
     }
 
-    return setPosition(trackId.value<QDBusObjectPath>().path(), position);
+    return setPosition(trackIdAsString(trackId), position);
 }
 
 bool MprisClient::setPosition(const QString &aTrackId, qlonglong position)
@@ -692,10 +699,10 @@ void MprisClientPrivate::onCanControlChanged()
 
 void MprisClientPrivate::onMetadataChanged()
 {
-    QString oldTrackId = m_metaData.trackId().toString();
+    QString oldTrackId = trackIdAsString(m_metaData.trackId());
     m_metaData.priv->setMetaData(m_mprisPlayerInterface.metadata());
 
-    if (oldTrackId != m_metaData.trackId()) {
+    if (oldTrackId != trackIdAsString(m_metaData.trackId())) {
         m_lastPosition = 0;
         m_positionElapsed.start();
         Q_EMIT parent()->positionChanged(parent()->position());
