@@ -703,6 +703,8 @@ void MprisClientPrivate::onMetadataChanged()
     m_metaData.priv->setMetaData(m_mprisPlayerInterface.metadata());
 
     if (oldTrackId != trackIdAsString(m_metaData.trackId())) {
+        qCDebug(lcClient) << Q_FUNC_INFO
+                          << "Track id changed:" << oldTrackId << "=>" << trackIdAsString(m_metaData.trackId());
         m_lastPosition = 0;
         m_positionElapsed.start();
         Q_EMIT parent()->positionChanged(parent()->position());
