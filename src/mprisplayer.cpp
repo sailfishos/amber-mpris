@@ -604,8 +604,8 @@ void MprisPlayer::setServiceName(const QString &serviceName)
             priv->m_serviceName = serviceName;
         }
 
-        priv->m_connection->registerService(priv->m_serviceName);
         priv->m_connection->registerObject(QStringLiteral("/org/mpris/MediaPlayer2"), priv);
+        priv->m_connection->registerService(priv->m_serviceName);
     } else {
         priv->m_serviceName = serviceName;
     }
