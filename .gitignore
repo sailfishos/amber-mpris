@@ -3,3 +3,11 @@ moc_*
 *.moc
 Makefile
 *.a
+*.list
+/doc/ambermpris.qch
+/doc/html/
+/src/libambermpris.prl
+/src/pkgconfig/
+/declarative/libambermprisplugin.so
+/src/libambermpris.so
+/src/libambermpris.so.*

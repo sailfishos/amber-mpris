@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2022 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,11 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
+#include <QLoggingCategory>
 #include "mprisclient_p.h"
 #include "mpris.h"
 
-#include <QtDebug>
+namespace {
+    Q_LOGGING_CATEGORY(lcPlayerIface, "org.amber.mpris.player.iface", QtWarningMsg)
+}
 
 using namespace Amber;
 
@@ -38,10 +40,10 @@ MprisPlayerInterface::MprisPlayerInterface(const QString &service, const QString
     , m_canPause(false)
     , m_canPlay(false)
     , m_canSeek(false)
-    , m_loopStatus(Mpris::LoopNone)
+    , m_loopStatus(QStringLiteral("LoopNone"))
     , m_maximumRate(1)
     , m_minimumRate(1)
-    , m_playbackStatus(Mpris::Stopped)
+    , m_playbackStatus(QStringLiteral("Stopped"))
     , m_position(0)
     , m_rate(1)
     , m_shuffle(false)
@@ -147,9 +149,9 @@ void MprisPlayerInterface::onPropertyChanged(const QString &propertyName, const 
             Q_EMIT volumeChanged(m_volume);
         }
     } else {
-        qWarning() << Q_FUNC_INFO
-                   << "Received PropertyChanged signal from unknown property: "
-                   << propertyName;
+        qCWarning(lcPlayerIface) << Q_FUNC_INFO
+                                 << "Received PropertyChanged signal from unknown property: "
+                                 << propertyName;
     }
 }
 
