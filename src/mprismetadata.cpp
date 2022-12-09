@@ -221,6 +221,7 @@
 #include <QDBusObjectPath>
 
 #include <QDebug>
+#include <QLoggingCategory>
 
 #include "mprismetadata.h"
 #include "mprismetadata_p.h"
@@ -228,6 +229,8 @@
 using namespace Amber;
 
 namespace {
+    Q_LOGGING_CATEGORY(lcMetaData, "org.amber.mpris.metadata", QtWarningMsg)
+
     const QString MetaFieldTrackId = QStringLiteral("mpris:trackid");
     const QString MetaFieldLength = QStringLiteral("mpris:length");
     const QString MetaFieldArtUrl = QStringLiteral("mpris:artUrl");
@@ -254,6 +257,12 @@ namespace {
     const QString MetaFieldInternalYear = QStringLiteral("year");
 
     const QString TrackObjectPathPrefix = QStringLiteral("/org/mpris/MediaPlayer2/TrackList/");
+
+    bool validateTrackIdAsObjectPath(const QString &trackId)
+    {
+        QDBusObjectPath objectPath(trackId.startsWith('/') ? trackId : (TrackObjectPathPrefix + trackId));
+        return !objectPath.path().isEmpty();
+    }
 
     template<class T> QVariant ensureType(const QVariant &from)
     {
@@ -430,7 +439,21 @@ QVariant MprisMetaData::trackId() const
 
 void MprisMetaData::setTrackId(const QVariant &trackId)
 {
-    priv->setMetaData(MetaFieldTrackId, trackId);
+    // Accepts a string, QDBusObjectPath or null.
+    // String must validate as object path or the last element of a path.
+    QVariant value;
+    if (trackId.userType() == qMetaTypeId<QDBusObjectPath>()) {
+        value = trackId.value<QDBusObjectPath>().path();
+    } else if (trackId.isNull()) {
+        // Pass, null QVariant makes D-Bus interface to advertise NoTrack value
+    } else {
+        QString id = trackId.toString();
+        if (!validateTrackIdAsObjectPath(id))
+            qCWarning(lcMetaData) << "Invalid value given for mpris:trackid:" << id;
+        else
+            value = id;
+    }
+    priv->setMetaData(MetaFieldTrackId, value);
 }
 
 QVariant MprisMetaData::duration() const
