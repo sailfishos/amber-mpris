@@ -336,7 +336,7 @@ bool MprisClient::seek(qlonglong offset)
         return false;
     }
 
-    priv->handleCall(priv->m_mprisPlayerInterface.Seek(offset));
+    priv->handleCall(priv->m_mprisPlayerInterface.Seek(offset * 1000));
 
     return true;
 }

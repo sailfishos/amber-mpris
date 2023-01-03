@@ -418,7 +418,8 @@ using namespace Amber;
     \qmlsignal MprisPlayer::seeked(int position)
 
     This signal should be emitted whenever there has been a non-linear change
-    in the position withing the currently playing media.
+    in the position within the currently playing media. The value is the new
+    position after seek in milliseconds.
 */
 
 /*!
