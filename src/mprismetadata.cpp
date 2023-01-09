@@ -400,12 +400,12 @@ QVariantMap MprisMetaDataPrivate::typedMetaData() const
 void MprisMetaDataPrivate::setMetaData(const QString &key, const QVariant &value)
 {
     if (!value.isValid() || value.isNull()) {
-            if (!m_metaData.remove(key))
-                    return;
-    } else if (m_metaData.value(key) != value) {
-            m_metaData[key] = value;
-    } else {
+        if (!m_metaData.remove(key))
             return;
+    } else if (m_metaData.value(key) != value) {
+        m_metaData[key] = value;
+    } else {
+        return;
     }
     m_changedDelay.start();
 }

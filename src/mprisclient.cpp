@@ -643,7 +643,7 @@ void MprisClientPrivate::onAsyncGetAllRootPropertiesFinished()
     m_initedRootInterface = true;
 
     if (parent()->isValid()) {
-            Q_EMIT parent()->isValidChanged();
+        Q_EMIT parent()->isValidChanged();
     }
 }
 
@@ -659,7 +659,7 @@ void MprisClientPrivate::onAsyncGetAllPlayerPropertiesFinished()
     m_initedPlayerInterface = true;
 
     if (parent()->isValid()) {
-            Q_EMIT parent()->isValidChanged();
+        Q_EMIT parent()->isValidChanged();
     }
 }
 
