@@ -497,7 +497,7 @@ public:
     QList<MprisClient *> m_pendingClients;
     QList<MprisClient *> m_availableClients;
     QList<MprisClient *> m_otherPlayingClients;
-    unsigned m_positionConnected;
+    unsigned m_positionConnectionCount;
 };
 }
 
@@ -508,7 +508,7 @@ MprisControllerPrivate::MprisControllerPrivate(MprisController *parent)
     , m_currentClient(nullptr)
     , m_connection(getDBusConnection())
     , m_dummyMetaData(this)
-    , m_positionConnected(0)
+    , m_positionConnectionCount(0)
 {
     if (!m_connection.isConnected()) {
         qCWarning(lcController) << "Mpris: Failed attempting to connect to DBus";
@@ -852,7 +852,7 @@ void MprisController::setVolume(double volume)
 void MprisController::connectNotify(const QMetaMethod &method)
 {
     if (method == QMetaMethod::fromSignal(&MprisController::positionChanged)) {
-        if (!priv->m_positionConnected++ && priv->m_currentClient) {
+        if (!priv->m_positionConnectionCount++ && priv->m_currentClient) {
             connect(priv->m_currentClient, &MprisClient::positionChanged, this, &MprisController::positionChanged);
         }
     }
@@ -861,7 +861,7 @@ void MprisController::connectNotify(const QMetaMethod &method)
 void MprisController::disconnectNotify(const QMetaMethod &method)
 {
     if (method == QMetaMethod::fromSignal(&MprisController::positionChanged)) {
-        if (!--priv->m_positionConnected && priv->m_currentClient) {
+        if (!--priv->m_positionConnectionCount && priv->m_currentClient) {
             disconnect(priv->m_currentClient, &MprisClient::positionChanged, this, &MprisController::positionChanged);
         }
     }
@@ -1224,7 +1224,7 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
         connect(m_currentClient, &MprisClient::maximumRateChanged, q_ptr, &MprisController::maximumRateChanged);
         connect(m_currentClient, &MprisClient::minimumRateChanged, q_ptr, &MprisController::minimumRateChanged);
         connect(m_currentClient, &MprisClient::playbackStatusChanged, q_ptr, &MprisController::playbackStatusChanged);
-        if (m_positionConnected) {
+        if (m_positionConnectionCount) {
             connect(m_currentClient, &MprisClient::positionChanged, q_ptr, &MprisController::positionChanged);
         }
         connect(m_currentClient, &MprisClient::rateChanged, q_ptr, &MprisController::rateChanged);
