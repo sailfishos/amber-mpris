@@ -40,13 +40,13 @@ public:
     QVariantMap typedMetaData() const;
     void setMetaData(const QString &key, const QVariant &value);
     void setMetaData(const QVariantMap &metaData);
-    MprisMetaData *parent() const;
 
 public Q_SLOTS:
     void fillFromPropertyChange();
     void fillFrom();
 
 public:
+    MprisMetaData *q_ptr;
     QVariantMap m_metaData;
     QTimer m_changedDelay;
     QTimer m_fillFromDelay;

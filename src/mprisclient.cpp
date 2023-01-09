@@ -101,12 +101,12 @@ public Q_SLOTS:
     void onPositionTimeout();
 
 public:
+    MprisClient *q_ptr;
     MprisRootInterface m_mprisRootInterface;
     MprisPlayerInterface m_mprisPlayerInterface;
 
     MprisMetaData m_metaData;
     QTimer m_positionTimer;
-    MprisClient *parent() const;
 
     void handleCall(const QDBusPendingReply<> &reply);
 
@@ -122,6 +122,7 @@ public:
 
 MprisClientPrivate::MprisClientPrivate(const QString &service, const QDBusConnection &connection, MprisClient *parent)
     : QObject(parent)
+    , q_ptr(parent)
     , m_mprisRootInterface(service, mprisObjectPath, connection, this)
     , m_mprisPlayerInterface(service, mprisObjectPath, connection, this)
     , m_metaData(this)
@@ -146,16 +147,11 @@ MprisClientPrivate::~MprisClientPrivate()
 
 void MprisClientPrivate::onPositionTimeout()
 {
-    if (parent()->playbackStatus() == Mpris::Playing && m_positionElapsed.elapsed() > m_syncInterval) {
-        parent()->requestPosition();
+    if (q_ptr->playbackStatus() == Mpris::Playing && m_positionElapsed.elapsed() > m_syncInterval) {
+        q_ptr->requestPosition();
     } else {
-        Q_EMIT parent()->positionChanged(parent()->position());
+        Q_EMIT q_ptr->positionChanged(q_ptr->position());
     }
-}
-
-MprisClient *MprisClientPrivate::parent() const
-{
-    return static_cast<MprisClient *>(QObject::parent());
 }
 
 void MprisClientPrivate::handleCall(const QDBusPendingReply<> &reply)
@@ -642,8 +638,8 @@ void MprisClientPrivate::onAsyncGetAllRootPropertiesFinished()
 
     m_initedRootInterface = true;
 
-    if (parent()->isValid()) {
-        Q_EMIT parent()->isValidChanged();
+    if (q_ptr->isValid()) {
+        Q_EMIT q_ptr->isValidChanged();
     }
 }
 
@@ -658,8 +654,8 @@ void MprisClientPrivate::onAsyncGetAllPlayerPropertiesFinished()
 
     m_initedPlayerInterface = true;
 
-    if (parent()->isValid()) {
-        Q_EMIT parent()->isValidChanged();
+    if (q_ptr->isValid()) {
+        Q_EMIT q_ptr->isValidChanged();
     }
 }
 
@@ -677,11 +673,11 @@ void MprisClientPrivate::onCanControlChanged()
         // I could disconnect and re-connect the signals so I avoid
         // double arriving signals but this really shouldn't happen
         // ever.
-        Q_EMIT parent()->canGoNextChanged();
-        Q_EMIT parent()->canGoPreviousChanged();
-        Q_EMIT parent()->canPauseChanged();
-        Q_EMIT parent()->canPlayChanged();
-        Q_EMIT parent()->canSeekChanged();
+        Q_EMIT q_ptr->canGoNextChanged();
+        Q_EMIT q_ptr->canGoPreviousChanged();
+        Q_EMIT q_ptr->canPauseChanged();
+        Q_EMIT q_ptr->canPlayChanged();
+        Q_EMIT q_ptr->canSeekChanged();
         qCWarning(lcClient) << Q_FUNC_INFO
                             << "CanControl is not supposed to change its value!";
         return;
@@ -698,7 +694,7 @@ void MprisClientPrivate::onMetadataChanged()
     if (oldTrackId != m_metaData.trackId()) {
         m_lastPosition = 0;
         m_positionElapsed.start();
-        Q_EMIT parent()->positionChanged(parent()->position());
+        Q_EMIT q_ptr->positionChanged(q_ptr->position());
     }
 }
 
@@ -706,22 +702,22 @@ void MprisClientPrivate::onPositionChanged(qlonglong aPosition)
 {
     m_positionElapsed.start();
     m_lastPosition = aPosition / 1000;
-    Q_EMIT parent()->positionChanged(aPosition / 1000);
+    Q_EMIT q_ptr->positionChanged(aPosition / 1000);
 }
 
 void MprisClientPrivate::onRateChanged()
 {
-    if (parent()->playbackStatus() == Mpris::Playing) {
-        parent()->requestPosition();
+    if (q_ptr->playbackStatus() == Mpris::Playing) {
+        q_ptr->requestPosition();
     }
-    Q_EMIT parent()->rateChanged();
+    Q_EMIT q_ptr->rateChanged();
 }
 
 // Private
 
 void MprisClientPrivate::onPlaybackStatusChanged()
 {
-    switch (parent()->playbackStatus()) {
+    switch (q_ptr->playbackStatus()) {
     case Mpris::Paused:
         m_lastPosition += m_positionElapsed.elapsed();
         m_positionTimer.stop();
@@ -730,7 +726,7 @@ void MprisClientPrivate::onPlaybackStatusChanged()
     case Mpris::Stopped:
         m_lastPosition = 0;
         m_positionTimer.stop();
-        Q_EMIT parent()->positionChanged(0);
+        Q_EMIT q_ptr->positionChanged(0);
         break;
 
     case Mpris::Playing:
@@ -741,15 +737,15 @@ void MprisClientPrivate::onPlaybackStatusChanged()
         break;
     }
 
-    Q_EMIT parent()->playbackStatusChanged();
+    Q_EMIT q_ptr->playbackStatusChanged();
 }
 
 void MprisClientPrivate::onSeeked(qlonglong aPosition)
 {
     m_lastPosition = aPosition / 1000;
     m_positionElapsed.start();
-    Q_EMIT parent()->positionChanged(aPosition / 1000);
-    Q_EMIT parent()->seeked(aPosition);
+    Q_EMIT q_ptr->positionChanged(aPosition / 1000);
+    Q_EMIT q_ptr->seeked(aPosition);
 }
 
 void MprisClientPrivate::onFinishedPendingCall(QDBusPendingCallWatcher *call)

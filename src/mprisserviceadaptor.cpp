@@ -41,90 +41,74 @@ using namespace Amber;
 
 MprisServiceAdaptor::MprisServiceAdaptor(MprisPlayerPrivate *parent)
     : QDBusAbstractAdaptor(parent)
+    , m_playerPrivate(parent)
 {
-    // constructor
     setAutoRelaySignals(true);
 }
 
 MprisServiceAdaptor::~MprisServiceAdaptor()
 {
-    // destructor
-}
-
-MprisPlayerPrivate *MprisServiceAdaptor::parent() const
-{
-    return static_cast<MprisPlayerPrivate *>(QObject::parent());
 }
 
 bool MprisServiceAdaptor::canQuit() const
 {
-    // get the value of property CanQuit
-    return parent()->m_canQuit;
+    return m_playerPrivate->m_canQuit;
 }
 
 bool MprisServiceAdaptor::canRaise() const
 {
-    // get the value of property CanRaise
-    return parent()->m_canRaise;
+    return m_playerPrivate->m_canRaise;
 }
 
 bool MprisServiceAdaptor::canSetFullscreen() const
 {
-    // get the value of property CanSetFullscreen
-    return parent()->m_canSetFullscreen;
+    return m_playerPrivate->m_canSetFullscreen;
 }
 
 QString MprisServiceAdaptor::desktopEntry() const
 {
-    // get the value of property DesktopEntry
-    return parent()->m_desktopEntry;
+    return m_playerPrivate->m_desktopEntry;
 }
 
 bool MprisServiceAdaptor::fullscreen() const
 {
-    // get the value of property Fullscreen
-    return parent()->m_fullscreen;
+    return m_playerPrivate->m_fullscreen;
 }
 
 void MprisServiceAdaptor::setFullscreen(bool value)
 {
-    // set the value of property Fullscreen
-    parent()->setProperty("Fullscreen", QVariant::fromValue(value));
+    m_playerPrivate->setProperty("Fullscreen", QVariant::fromValue(value));
 }
 
 bool MprisServiceAdaptor::hasTrackList() const
 {
-    // get the value of property HasTrackList
-    return parent()->m_hasTrackList;
+    return m_playerPrivate->m_hasTrackList;
 }
 
 QString MprisServiceAdaptor::identity() const
 {
-    // get the value of property Identity
-    return parent()->m_identity;
+    return m_playerPrivate->m_identity;
 }
 
 QStringList MprisServiceAdaptor::supportedMimeTypes() const
 {
-    // get the value of property SupportedMimeTypes
-    return parent()->m_supportedMimeTypes;
+    return m_playerPrivate->m_supportedMimeTypes;
 }
 
 QStringList MprisServiceAdaptor::supportedUriSchemes() const
 {
-    // get the value of property SupportedUriSchemes
-    return parent()->m_supportedUriSchemes;
+    return m_playerPrivate->m_supportedUriSchemes;
 }
 
 void MprisServiceAdaptor::Quit()
 {
     // handle method call org.mpris.MediaPlayer2.Quit
-    parent()->quit();
+    m_playerPrivate->quit();
 }
 
 void MprisServiceAdaptor::Raise()
 {
     // handle method call org.mpris.MediaPlayer2.Raise
-    parent()->raise();
+    m_playerPrivate->raise();
 }
 

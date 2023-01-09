@@ -39,6 +39,7 @@ namespace {
 
 MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     : QObject(parent)
+    , q_ptr(parent)
     , m_connection(nullptr)
     , m_serviceAdaptor(this)
     , m_playerAdaptor(this)
@@ -82,24 +83,19 @@ MprisPlayerPrivate::~MprisPlayerPrivate()
     }
 }
 
-MprisPlayer *MprisPlayerPrivate::parent() const
-{
-    return static_cast<MprisPlayer *>(QObject::parent());
-}
-
 void MprisPlayerPrivate::quit()
 {
-    Q_EMIT parent()->quitRequested();
+    Q_EMIT q_ptr->quitRequested();
 }
 
 void MprisPlayerPrivate::raise()
 {
-    Q_EMIT parent()->raiseRequested();
+    Q_EMIT q_ptr->raiseRequested();
 }
 
 qlonglong MprisPlayerPrivate::position() const
 {
-    return static_cast<MprisPlayer *>(parent())->position() * 1000;
+    return q_ptr->position() * 1000;
 }
 
 void MprisPlayerPrivate::setLoopStatus(const QString &value)
@@ -118,7 +114,7 @@ void MprisPlayerPrivate::setLoopStatus(const QString &value)
     }
 
     if (ok) {
-        Q_EMIT parent()->loopStatusRequested(enumVal);
+        Q_EMIT q_ptr->loopStatusRequested(enumVal);
     } else {
         sendErrorReply(QDBusError::InvalidArgs, QStringLiteral("Invalid loop status"));
     }
@@ -126,7 +122,7 @@ void MprisPlayerPrivate::setLoopStatus(const QString &value)
 
 QString MprisPlayerPrivate::loopStatus() const
 {
-    switch (parent()->loopStatus()) {
+    switch (q_ptr->loopStatus()) {
     case Mpris::LoopNone:
         return QLatin1String("None");
     case Mpris::LoopTrack:
@@ -140,134 +136,134 @@ QString MprisPlayerPrivate::loopStatus() const
 
 QString MprisPlayerPrivate::playbackStatus() const
 {
-    const char *strVal = QMetaEnum::fromType<Mpris::PlaybackStatus>().valueToKey(static_cast<int>(parent()->playbackStatus()));
+    const char *strVal = QMetaEnum::fromType<Mpris::PlaybackStatus>().valueToKey(static_cast<int>(q_ptr->playbackStatus()));
     return QString::fromLatin1(strVal);
 }
 
 void MprisPlayerPrivate::setRate(double rate)
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (rate < parent()->minimumRate() || rate > parent()->maximumRate()) {
+    } else if (rate < q_ptr->minimumRate() || rate > q_ptr->maximumRate()) {
         sendErrorReply(QDBusError::InvalidArgs, QStringLiteral("Rate not in the allowed range"));
     } else {
-        Q_EMIT parent()->rateRequested(rate);
+        Q_EMIT q_ptr->rateRequested(rate);
     }
 }
 
 void MprisPlayerPrivate::setShuffle(bool shuffle)
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
     } else {
-        Q_EMIT parent()->shuffleRequested(shuffle);
+        Q_EMIT q_ptr->shuffleRequested(shuffle);
     }
 }
 
 void MprisPlayerPrivate::setVolume(double volume)
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
     } else {
-        Q_EMIT parent()->volumeRequested(volume);
+        Q_EMIT q_ptr->volumeRequested(volume);
     }
 }
 
 void MprisPlayerPrivate::Next()
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (!parent()->canGoNext()) {
+    } else if (!q_ptr->canGoNext()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
-        Q_EMIT parent()->nextRequested();
+        Q_EMIT q_ptr->nextRequested();
     }
 }
 
 void MprisPlayerPrivate::OpenUri(const QString &Uri)
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
     } else {
-        Q_EMIT parent()->openUriRequested(QUrl::fromUserInput(Uri));
+        Q_EMIT q_ptr->openUriRequested(QUrl::fromUserInput(Uri));
     }
 }
 
 void MprisPlayerPrivate::Pause()
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (!parent()->canPause()) {
+    } else if (!q_ptr->canPause()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
-        Q_EMIT parent()->pauseRequested();
+        Q_EMIT q_ptr->pauseRequested();
     }
 }
 
 void MprisPlayerPrivate::Play()
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (!parent()->canPlay()) {
+    } else if (!q_ptr->canPlay()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
-        Q_EMIT parent()->playRequested();
+        Q_EMIT q_ptr->playRequested();
     }
 }
 
 void MprisPlayerPrivate::PlayPause()
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (!parent()->canPlay() && !parent()->canPause()) {
+    } else if (!q_ptr->canPlay() && !q_ptr->canPause()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
-        Q_EMIT parent()->playPauseRequested();
+        Q_EMIT q_ptr->playPauseRequested();
     }
 }
 
 void MprisPlayerPrivate::Previous()
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (!parent()->canGoPrevious()) {
+    } else if (!q_ptr->canGoPrevious()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
-        Q_EMIT parent()->previousRequested();
+        Q_EMIT q_ptr->previousRequested();
     }
 }
 
 void MprisPlayerPrivate::Seek(qlonglong Offset)
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (!parent()->canSeek()) {
+    } else if (!q_ptr->canSeek()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
-        Q_EMIT parent()->seekRequested(Offset / 1000);
+        Q_EMIT q_ptr->seekRequested(Offset / 1000);
     }
 }
 
 void MprisPlayerPrivate::SetPosition(const QDBusObjectPath &TrackId, qlonglong position)
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
-    } else if (!parent()->canSeek()) {
+    } else if (!q_ptr->canSeek()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
         QString tid = TrackId.path();
         if (tid.startsWith(TrackPrefix))
             tid = tid.mid(TrackPrefix.size());
-        Q_EMIT parent()->setPositionRequested(tid, position / 1000);
+        Q_EMIT q_ptr->setPositionRequested(tid, position / 1000);
     }
 }
 
 void MprisPlayerPrivate::Stop()
 {
-    if (!parent()->canControl()) {
+    if (!q_ptr->canControl()) {
         sendErrorReply(QDBusError::NotSupported, QStringLiteral("The operation is not supported"));
     } else {
-        Q_EMIT parent()->stopRequested();
+        Q_EMIT q_ptr->stopRequested();
     }
 }
 

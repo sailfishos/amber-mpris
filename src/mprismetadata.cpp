@@ -329,6 +329,7 @@ namespace {
 
 MprisMetaDataPrivate::MprisMetaDataPrivate(MprisMetaData *metaData)
     : QObject(metaData)
+    , q_ptr(metaData)
 {
     m_changedDelay.setInterval(50);
     m_changedDelay.setSingleShot(true);
@@ -339,11 +340,6 @@ MprisMetaDataPrivate::MprisMetaDataPrivate(MprisMetaData *metaData)
 }
 
 MprisMetaDataPrivate::~MprisMetaDataPrivate() {}
-
-MprisMetaData *MprisMetaDataPrivate::parent() const
-{
-    return static_cast<MprisMetaData *>(QObject::parent());
-}
 
 void MprisMetaDataPrivate::fillFromPropertyChange()
 {
@@ -361,7 +357,7 @@ void MprisMetaDataPrivate::fillFrom()
     }
 
     for (auto p : m_changedProperties) {
-        parent()->setProperty(p, m_fillFromObject->property(p));
+        q_ptr->setProperty(p, m_fillFromObject->property(p));
     }
 
     m_changedProperties.clear();
@@ -414,7 +410,7 @@ void MprisMetaDataPrivate::setMetaData(const QVariantMap &metaData)
 {
     if (metaData != m_metaData) {
         m_metaData = metaData;
-        Q_EMIT parent()->metaDataChanged();
+        Q_EMIT q_ptr->metaDataChanged();
     }
 }
 

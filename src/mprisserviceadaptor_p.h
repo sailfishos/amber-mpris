@@ -82,8 +82,6 @@ public:
     MprisServiceAdaptor(MprisPlayerPrivate *parent);
     virtual ~MprisServiceAdaptor();
 
-    MprisPlayerPrivate *parent() const;
-
 public: // PROPERTIES
     Q_PROPERTY(bool CanQuit READ canQuit)
     bool canQuit() const;
@@ -116,7 +114,9 @@ public: // PROPERTIES
 public Q_SLOTS: // METHODS
     void Quit();
     void Raise();
-Q_SIGNALS: // SIGNALS
+
+private:
+    MprisPlayerPrivate *m_playerPrivate;
 };
 }
 
