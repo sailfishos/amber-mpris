@@ -716,15 +716,13 @@ void MprisMetaData::setFillFrom(const QVariant &fillFrom)
 
         for (int i = thisMeta->propertyOffset(); i < thisMeta->propertyCount(); i++) {
             QMetaProperty thisProp = thisMeta->property(i);
-            int j;
-
             if (QLatin1String("fillFrom") == thisProp.name())
                 continue;
 
-            j = thatMeta->indexOfProperty(thisProp.name());
+            int propertyIndex = thatMeta->indexOfProperty(thisProp.name());
 
-            if (j >= 0) {
-                QMetaProperty thatProp = thatMeta->property(j);
+            if (propertyIndex >= 0) {
+                QMetaProperty thatProp = thatMeta->property(propertyIndex);
                 if (thatProp.hasNotifySignal()) {
                     connect(&*priv->m_fillFromObject, thatProp.notifySignal(),
                             priv, fillFromChanged);
