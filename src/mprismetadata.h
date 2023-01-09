@@ -33,9 +33,7 @@ class MprisMetaDataPrivate;
 class AMBER_MPRIS_EXPORT MprisMetaData : public QObject
 {
     Q_OBJECT
-
     Q_PROPERTY(QVariant trackId READ trackId WRITE setTrackId NOTIFY metaDataChanged)
-
     Q_PROPERTY(QVariant duration READ duration WRITE setDuration NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant artUrl READ artUrl WRITE setArtUrl NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant albumTitle READ albumTitle WRITE setAlbumTitle NOTIFY metaDataChanged)
