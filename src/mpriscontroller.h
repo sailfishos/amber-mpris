@@ -69,7 +69,7 @@ class AMBER_MPRIS_EXPORT MprisController : public QObject
     Q_PROPERTY(bool canSeek READ canSeek NOTIFY canSeekChanged)
     Q_PROPERTY(Amber::Mpris::LoopStatus loopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
     Q_PROPERTY(double maximumRate READ maximumRate NOTIFY maximumRateChanged)
-    Q_PROPERTY(Amber::MprisMetaData *metaData READ metaData NOTIFY metaDataChanged)
+    Q_PROPERTY(Amber::MprisMetaData *metaData READ metaData CONSTANT)
     Q_PROPERTY(double minimumRate READ minimumRate NOTIFY minimumRateChanged)
     Q_PROPERTY(Amber::Mpris::PlaybackStatus playbackStatus READ playbackStatus NOTIFY playbackStatusChanged)
     Q_PROPERTY(qlonglong position READ position NOTIFY positionChanged)
@@ -174,7 +174,6 @@ Q_SIGNALS:
     void canSeekChanged();
     void loopStatusChanged();
     void maximumRateChanged();
-    void metaDataChanged();
     void minimumRateChanged();
     void playbackStatusChanged();
     void positionChanged(qlonglong position);

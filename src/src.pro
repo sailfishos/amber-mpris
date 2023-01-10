@@ -27,6 +27,7 @@ SOURCES += \
     mprisclient.cpp \
     mpriscontroller.cpp \
     mprismetadata.cpp \
+    mprismetadataproxy.cpp \
     mprisplayer.cpp \
     mprisplayeradaptor.cpp \
     mprisplayerinterface.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     mpriscontroller.h \
     mprismetadata.h \
     mprismetadata_p.h \
+    mprismetadataproxy.h \
     mprisplayeradaptor_p.h \
     mprisplayer.h \
     mprisplayer_p.h \

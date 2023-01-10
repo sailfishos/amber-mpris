@@ -444,6 +444,7 @@
 
 #include "mprisclient.h"
 #include "ambermpris_p.h"
+#include "mprismetadataproxy.h"
 
 #include <algorithm>
 #include <QMetaMethod>
@@ -493,7 +494,7 @@ public:
     QString m_singleServiceName;
     MprisClient *m_currentClient;
     QDBusConnection m_connection;
-    MprisMetaData m_dummyMetaData;
+    MprisMetaDataProxy m_metaData;
     QList<MprisClient *> m_pendingClients;
     QList<MprisClient *> m_availableClients;
     QList<MprisClient *> m_otherPlayingClients;
@@ -507,7 +508,7 @@ MprisControllerPrivate::MprisControllerPrivate(MprisController *parent)
     , m_singleService(false)
     , m_currentClient(nullptr)
     , m_connection(getDBusConnection())
-    , m_dummyMetaData(this)
+    , m_metaData(this)
     , m_positionConnectionCount(0)
 {
     if (!m_connection.isConnected()) {
@@ -788,7 +789,7 @@ double MprisController::maximumRate() const
 
 MprisMetaData *MprisController::metaData() const
 {
-    return priv->m_currentClient ? priv->m_currentClient->metaData() : &priv->m_dummyMetaData;
+    return &priv->m_metaData;
 }
 
 double MprisController::minimumRate() const
@@ -1121,7 +1122,6 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     bool oldCanSeek = q_ptr->canSeek();
     Mpris::LoopStatus oldLoopStatus = q_ptr->loopStatus();
     double oldMaximumRate = q_ptr->maximumRate();
-    const MprisMetaData *oldMetaData = q_ptr->metaData();
     double oldMinimumRate = q_ptr->minimumRate();
     Mpris::PlaybackStatus oldPlaybackStatus = q_ptr->playbackStatus();
     double oldRate = q_ptr->rate();
@@ -1129,6 +1129,7 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     double oldVolume = q_ptr->volume();
 
     m_currentClient = client;
+    m_metaData.setTarget(m_currentClient ? m_currentClient->metaData() : nullptr);
 
     if (oldCanQuit != q_ptr->canQuit()) {
         Q_EMIT q_ptr->canQuitChanged();
@@ -1181,9 +1182,6 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     }
     if (oldMaximumRate != q_ptr->maximumRate()) {
         Q_EMIT q_ptr->maximumRateChanged();
-    }
-    if (oldMetaData != q_ptr->metaData()) {
-        Q_EMIT q_ptr->metaDataChanged();
     }
     if (oldMinimumRate != q_ptr->minimumRate()) {
         Q_EMIT q_ptr->minimumRateChanged();
@@ -1238,7 +1236,6 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     }
 
     Q_EMIT q_ptr->currentServiceChanged();
-    Q_EMIT q_ptr->metaDataChanged();
     Q_EMIT q_ptr->positionChanged(q_ptr->position());
 }
 

@@ -420,6 +420,10 @@ MprisMetaData::MprisMetaData(QObject *parent)
 {
 }
 
+MprisMetaData::~MprisMetaData()
+{
+}
+
 QVariant MprisMetaData::trackId() const
 {
     if (priv->m_metaData.contains(MetaFieldTrackId)) {
