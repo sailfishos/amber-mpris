@@ -70,7 +70,7 @@ using namespace Amber;
     \qmlproperty bool MprisPlayer::canSetFullscreen
     \brief Sets indication whether the player can be told to go full screen
 
-    When set to true, a remote controlelr can emit the fullScreenRequested signal.
+    When set to true, a remote controller can emit the fullScreenRequested signal.
     Defaults to false.
 */
 

@@ -122,8 +122,6 @@ public:
     MprisPlayerAdaptor(MprisPlayerPrivate *parent);
     virtual ~MprisPlayerAdaptor();
 
-    MprisPlayerPrivate *parent() const;
-
 public: // PROPERTIES
     Q_PROPERTY(bool CanControl READ canControl)
     bool canControl() const;
@@ -186,6 +184,9 @@ public Q_SLOTS: // METHODS
     void Stop();
 Q_SIGNALS: // SIGNALS
     void Seeked(qlonglong Position);
+
+private:
+    MprisPlayerPrivate *m_playerPrivate;
 };
 }
 

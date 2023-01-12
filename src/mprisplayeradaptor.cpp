@@ -39,180 +39,160 @@ using namespace Amber;
 
 MprisPlayerAdaptor::MprisPlayerAdaptor(MprisPlayerPrivate *parent)
     : QDBusAbstractAdaptor(parent)
+    , m_playerPrivate(parent)
 {
-    // constructor
     setAutoRelaySignals(true);
 }
 
 MprisPlayerAdaptor::~MprisPlayerAdaptor()
 {
-    // destructor
-}
-
-MprisPlayerPrivate *MprisPlayerAdaptor::parent() const {
-    { return static_cast<MprisPlayerPrivate *>(QObject::parent()); }
 }
 
 bool MprisPlayerAdaptor::canControl() const
 {
-    // get the value of property CanControl
-    return static_cast<MprisPlayer *>(parent()->parent())->canControl();
+    return m_playerPrivate->q_ptr->canControl();
 }
 
 bool MprisPlayerAdaptor::canGoNext() const
 {
-    // get the value of property CanGoNext
-    return static_cast<MprisPlayer *>(parent()->parent())->canGoNext();
+    return m_playerPrivate->q_ptr->canGoNext();
 }
 
 bool MprisPlayerAdaptor::canGoPrevious() const
 {
-    // get the value of property CanGoPrevious
-    return static_cast<MprisPlayer *>(parent()->parent())->canGoPrevious();
+    return m_playerPrivate->q_ptr->canGoPrevious();
 }
 
 bool MprisPlayerAdaptor::canPause() const
 {
-    // get the value of property CanPause
-    return static_cast<MprisPlayer *>(parent()->parent())->canPause();
+    return m_playerPrivate->q_ptr->canPause();
 }
 
 bool MprisPlayerAdaptor::canPlay() const
 {
-    // get the value of property CanPlay
-    return static_cast<MprisPlayer *>(parent()->parent())->canPlay();
+    return m_playerPrivate->q_ptr->canPlay();
 }
 
 bool MprisPlayerAdaptor::canSeek() const
 {
-    // get the value of property CanSeek
-    return static_cast<MprisPlayer *>(parent()->parent())->canSeek();
+    return m_playerPrivate->q_ptr->canSeek();
 }
 
 QString MprisPlayerAdaptor::loopStatus() const
 {
-    // get the value of property LoopStatus
-    return parent()->loopStatus();
+    return m_playerPrivate->loopStatus();
 }
 
 void MprisPlayerAdaptor::setLoopStatus(const QString &value)
 {
-    // set the value of property LoopStatus
-    parent()->setLoopStatus(value);
+    m_playerPrivate->setLoopStatus(value);
 }
 
 double MprisPlayerAdaptor::maximumRate() const
 {
-    // get the value of property MaximumRate
-    return static_cast<MprisPlayer *>(parent()->parent())->maximumRate();
+    return m_playerPrivate->q_ptr->maximumRate();
 }
 
 QVariantMap MprisPlayerAdaptor::metadata() const
 {
-    return parent()->metaData();
+    return m_playerPrivate->metaData();
 }
 
 double MprisPlayerAdaptor::minimumRate() const
 {
-    // get the value of property MinimumRate
-    return qvariant_cast< double >(parent()->property("MinimumRate"));
+    return m_playerPrivate->q_ptr->minimumRate();
 }
 
 QString MprisPlayerAdaptor::playbackStatus() const
 {
-    // get the value of property PlaybackStatus
-    return parent()->playbackStatus();
+    return m_playerPrivate->playbackStatus();
 }
 
 qlonglong MprisPlayerAdaptor::position() const
 {
-    // get the value of property Position
-    return parent()->position();
+    return m_playerPrivate->position();
 }
 
 double MprisPlayerAdaptor::rate() const
 {
-    // get the value of property Rate
-    return static_cast<MprisPlayer *>(parent()->parent())->rate();
+    return m_playerPrivate->q_ptr->rate();
 }
 
 void MprisPlayerAdaptor::setRate(double value)
 {
-    parent()->setRate(value);
+    m_playerPrivate->setRate(value);
 }
 
 bool MprisPlayerAdaptor::shuffle() const
 {
-    // get the value of property Shuffle
-    return static_cast<MprisPlayer *>(parent()->parent())->shuffle();
+    return m_playerPrivate->q_ptr->shuffle();
 }
 
 void MprisPlayerAdaptor::setShuffle(bool value)
 {
-    parent()->setShuffle(value);
+    m_playerPrivate->setShuffle(value);
 }
 
 double MprisPlayerAdaptor::volume() const
 {
-    // get the value of property Volume
-    return static_cast<MprisPlayer *>(parent()->parent())->volume();
+    return m_playerPrivate->q_ptr->volume();
 }
 
 void MprisPlayerAdaptor::setVolume(double value)
 {
-    parent()->setVolume(value);
+    m_playerPrivate->setVolume(value);
 }
 
 void MprisPlayerAdaptor::Next()
 {
     // handle method call org.mpris.MediaPlayer2.Player.Next
-    parent()->Next();
+    m_playerPrivate->Next();
 }
 
 void MprisPlayerAdaptor::OpenUri(const QString &Uri)
 {
-    parent()->OpenUri(Uri);
+    m_playerPrivate->OpenUri(Uri);
 }
 
 void MprisPlayerAdaptor::Pause()
 {
     // handle method call org.mpris.MediaPlayer2.Player.Pause
-    parent()->Pause();
+    m_playerPrivate->Pause();
 }
 
 void MprisPlayerAdaptor::Play()
 {
     // handle method call org.mpris.MediaPlayer2.Player.Play
-    parent()->Play();
+    m_playerPrivate->Play();
 }
 
 void MprisPlayerAdaptor::PlayPause()
 {
     // handle method call org.mpris.MediaPlayer2.Player.PlayPause
-    parent()->PlayPause();
+    m_playerPrivate->PlayPause();
 }
 
 void MprisPlayerAdaptor::Previous()
 {
     // handle method call org.mpris.MediaPlayer2.Player.Previous
-    parent()->Previous();
+    m_playerPrivate->Previous();
 }
 
 void MprisPlayerAdaptor::Seek(qlonglong Offset)
 {
     // handle method call org.mpris.MediaPlayer2.Player.Seek
-    parent()->Seek(Offset);
+    m_playerPrivate->Seek(Offset);
 }
 
 void MprisPlayerAdaptor::SetPosition(const QDBusObjectPath &TrackId, qlonglong Position)
 {
     // handle method call org.mpris.MediaPlayer2.Player.SetPosition
-    parent()->SetPosition(TrackId, Position);
+    m_playerPrivate->SetPosition(TrackId, Position);
 }
 
 void MprisPlayerAdaptor::Stop()
 {
-    // handle method call org.mpris.MediaPlayer2.Player.priv->stop
-    parent()->Stop();
+    // handle method call org.mpris.MediaPlayer2.Player.Stop
+    m_playerPrivate->Stop();
 }
 

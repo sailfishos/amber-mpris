@@ -30,12 +30,14 @@
 namespace Amber {
 class MprisMetaDataPrivate;
 
+// TODO: this should probably be split into read-only api on the controller side and
+// writable api on the media app side. Would be a slight API break, at least for naming.
+// also the change delay probably makes sense mostly on the media app side.
+
 class AMBER_MPRIS_EXPORT MprisMetaData : public QObject
 {
     Q_OBJECT
-
     Q_PROPERTY(QVariant trackId READ trackId WRITE setTrackId NOTIFY metaDataChanged)
-
     Q_PROPERTY(QVariant duration READ duration WRITE setDuration NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant artUrl READ artUrl WRITE setArtUrl NOTIFY metaDataChanged)
     Q_PROPERTY(QVariant albumTitle READ albumTitle WRITE setAlbumTitle NOTIFY metaDataChanged)
@@ -65,68 +67,69 @@ class AMBER_MPRIS_EXPORT MprisMetaData : public QObject
 public:
     MprisMetaData(QObject *parent = 0);
     MprisMetaData();
+    virtual ~MprisMetaData();
 
-    QVariant trackId() const;
-    void setTrackId(const QVariant &trackId);
+    virtual QVariant trackId() const;
+    virtual void setTrackId(const QVariant &trackId);
 
-    QVariant duration() const;
-    void setDuration(const QVariant &duration);
-    QVariant artUrl() const;
-    void setArtUrl(const QVariant &url);
-    QVariant albumTitle() const;
-    void setAlbumTitle(const QVariant &title);
-    QVariant albumArtist() const;
-    void setAlbumArtist(const QVariant &artist);
-    QVariant contributingArtist() const;
-    void setContributingArtist(const QVariant &artist);
-    QVariant lyrics() const;
-    void setLyrics(const QVariant &lyrics);
+    virtual QVariant duration() const;
+    virtual void setDuration(const QVariant &duration);
+    virtual QVariant artUrl() const;
+    virtual void setArtUrl(const QVariant &url);
+    virtual QVariant albumTitle() const;
+    virtual void setAlbumTitle(const QVariant &title);
+    virtual QVariant albumArtist() const;
+    virtual void setAlbumArtist(const QVariant &artist);
+    virtual QVariant contributingArtist() const;
+    virtual void setContributingArtist(const QVariant &artist);
+    virtual QVariant lyrics() const;
+    virtual void setLyrics(const QVariant &lyrics);
 
-    QVariant comment() const;
-    void setComment(const QVariant &comment);
-    QVariant composer() const;
-    void setComposer(const QVariant &composer);
-    QVariant year() const;
-    void setYear(const QVariant &year);
-    QVariant date() const;
-    void setDate(const QVariant &date);
-    QVariant discNumber() const;
-    void setDiscNumber(const QVariant &disc);
+    virtual QVariant comment() const;
+    virtual void setComment(const QVariant &comment);
+    virtual QVariant composer() const;
+    virtual void setComposer(const QVariant &composer);
+    virtual QVariant year() const;
+    virtual void setYear(const QVariant &year);
+    virtual QVariant date() const;
+    virtual void setDate(const QVariant &date);
+    virtual QVariant discNumber() const;
+    virtual void setDiscNumber(const QVariant &disc);
 
-    QVariant genre() const;
-    void setGenre(const QVariant &genre);
+    virtual QVariant genre() const;
+    virtual void setGenre(const QVariant &genre);
 
-    QVariant writer() const;
-    void setWriter(const QVariant &writer);
+    virtual QVariant writer() const;
+    virtual void setWriter(const QVariant &writer);
 
-    QVariant title() const;
-    void setTitle(const QVariant &title);
-    QVariant trackNumber() const;
-    void setTrackNumber(const QVariant &track);
+    virtual QVariant title() const;
+    virtual void setTitle(const QVariant &title);
+    virtual QVariant trackNumber() const;
+    virtual void setTrackNumber(const QVariant &track);
 
-    QVariant userRating() const;
-    void setUserRating(const QVariant &rating);
+    virtual QVariant userRating() const;
+    virtual void setUserRating(const QVariant &rating);
 
-    QVariant audioBpm() const;
-    void setAudioBpm(const QVariant &bpm);
-    QVariant autoRating() const;
-    void setAutoRating(const QVariant &rating);
-    QVariant firstUsed() const;
-    void setFirstUsed(const QVariant &used);
-    QVariant lastUsed() const;
-    void setLastUsed(const QVariant &used);
-    QVariant url() const;
-    void setUrl(const QVariant &url);
-    QVariant useCount() const;
-    void setUseCount(const QVariant &count);
+    virtual QVariant audioBpm() const;
+    virtual void setAudioBpm(const QVariant &bpm);
+    virtual QVariant autoRating() const;
+    virtual void setAutoRating(const QVariant &rating);
+    virtual QVariant firstUsed() const;
+    virtual void setFirstUsed(const QVariant &used);
+    virtual QVariant lastUsed() const;
+    virtual void setLastUsed(const QVariant &used);
+    virtual QVariant url() const;
+    virtual void setUrl(const QVariant &url);
+    virtual QVariant useCount() const;
+    virtual void setUseCount(const QVariant &count);
 
-    QVariantMap extraFields() const;
-    QVariant extraField(const QString &key) const;
-    void setExtraFields(const QVariantMap &fields);
-    void setExtraField(const QString &key, const QVariant &value);
+    virtual QVariantMap extraFields() const;
+    virtual QVariant extraField(const QString &key) const;
+    virtual void setExtraFields(const QVariantMap &fields);
+    virtual void setExtraField(const QString &key, const QVariant &value);
 
-    QVariant fillFrom() const;
-    void setFillFrom(const QVariant &fillFrom);
+    virtual QVariant fillFrom() const;
+    virtual void setFillFrom(const QVariant &fillFrom);
 
 Q_SIGNALS:
     void metaDataChanged();

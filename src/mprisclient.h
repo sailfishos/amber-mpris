@@ -64,7 +64,7 @@ class AMBER_MPRIS_EXPORT MprisClient : public QObject
     Q_PROPERTY(bool canSeek READ canSeek NOTIFY canSeekChanged)
     Q_PROPERTY(Amber::Mpris::LoopStatus loopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
     Q_PROPERTY(double maximumRate READ maximumRate NOTIFY maximumRateChanged)
-    Q_PROPERTY(Amber::MprisMetaData *metaData READ metaData NOTIFY metaDataChanged)
+    Q_PROPERTY(Amber::MprisMetaData *metaData READ metaData CONSTANT)
     Q_PROPERTY(double minimumRate READ minimumRate NOTIFY minimumRateChanged)
     Q_PROPERTY(Amber::Mpris::PlaybackStatus playbackStatus READ playbackStatus NOTIFY playbackStatusChanged)
     Q_PROPERTY(qlonglong position READ position NOTIFY positionChanged)
@@ -101,44 +101,29 @@ public:
 
     // Mpris2 Root Interface
     bool canQuit() const;
-
     bool canRaise() const;
-
     bool canSetFullscreen() const;
-
     QString desktopEntry() const;
-
     bool fullscreen() const;
     void setFullscreen(bool fullscreen);
-
     bool hasTrackList() const;
-
     QString identity() const;
-
     QStringList supportedUriSchemes() const;
-
     QStringList supportedMimeTypes() const;
 
     // Mpris2 Player Interface
     bool canControl() const;
-
     bool canGoNext() const;
-
     bool canGoPrevious() const;
-
     bool canPause() const;
-
     bool canPlay() const;
-
     bool canSeek() const;
 
     Mpris::LoopStatus loopStatus() const;
     void setLoopStatus(Mpris::LoopStatus loopStatus);
 
     double maximumRate() const;
-
     MprisMetaData *metaData() const;
-
     double minimumRate() const;
 
     Mpris::PlaybackStatus playbackStatus() const;
@@ -179,7 +164,6 @@ Q_SIGNALS:
     void canSeekChanged();
     void loopStatusChanged();
     void maximumRateChanged();
-    void metaDataChanged();
     void minimumRateChanged();
     void playbackStatusChanged();
     void positionChanged(qlonglong position);

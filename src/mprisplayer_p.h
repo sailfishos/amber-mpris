@@ -37,11 +37,10 @@ public:
     MprisPlayerPrivate(MprisPlayer *parent);
     ~MprisPlayerPrivate();
 
-    MprisPlayer *parent() const;
-
     void quit();
     void raise();
 
+    MprisPlayer *q_ptr;
     QDBusConnection *m_connection;
     MprisServiceAdaptor m_serviceAdaptor;
     MprisPlayerAdaptor m_playerAdaptor;

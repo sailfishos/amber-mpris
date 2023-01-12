@@ -329,6 +329,7 @@ namespace {
 
 MprisMetaDataPrivate::MprisMetaDataPrivate(MprisMetaData *metaData)
     : QObject(metaData)
+    , q_ptr(metaData)
 {
     m_changedDelay.setInterval(50);
     m_changedDelay.setSingleShot(true);
@@ -339,11 +340,6 @@ MprisMetaDataPrivate::MprisMetaDataPrivate(MprisMetaData *metaData)
 }
 
 MprisMetaDataPrivate::~MprisMetaDataPrivate() {}
-
-MprisMetaData *MprisMetaDataPrivate::parent() const
-{
-    return static_cast<MprisMetaData *>(QObject::parent());
-}
 
 void MprisMetaDataPrivate::fillFromPropertyChange()
 {
@@ -361,7 +357,7 @@ void MprisMetaDataPrivate::fillFrom()
     }
 
     for (auto p : m_changedProperties) {
-        parent()->setProperty(p, m_fillFromObject->property(p));
+        q_ptr->setProperty(p, m_fillFromObject->property(p));
     }
 
     m_changedProperties.clear();
@@ -400,12 +396,12 @@ QVariantMap MprisMetaDataPrivate::typedMetaData() const
 void MprisMetaDataPrivate::setMetaData(const QString &key, const QVariant &value)
 {
     if (!value.isValid() || value.isNull()) {
-            if (!m_metaData.remove(key))
-                    return;
-    } else if (m_metaData.value(key) != value) {
-            m_metaData[key] = value;
-    } else {
+        if (!m_metaData.remove(key))
             return;
+    } else if (m_metaData.value(key) != value) {
+        m_metaData[key] = value;
+    } else {
+        return;
     }
     m_changedDelay.start();
 }
@@ -414,13 +410,17 @@ void MprisMetaDataPrivate::setMetaData(const QVariantMap &metaData)
 {
     if (metaData != m_metaData) {
         m_metaData = metaData;
-        Q_EMIT parent()->metaDataChanged();
+        Q_EMIT q_ptr->metaDataChanged();
     }
 }
 
 MprisMetaData::MprisMetaData(QObject *parent)
     : QObject(parent)
     , priv(new MprisMetaDataPrivate(this))
+{
+}
+
+MprisMetaData::~MprisMetaData()
 {
 }
 
@@ -720,15 +720,13 @@ void MprisMetaData::setFillFrom(const QVariant &fillFrom)
 
         for (int i = thisMeta->propertyOffset(); i < thisMeta->propertyCount(); i++) {
             QMetaProperty thisProp = thisMeta->property(i);
-            int j;
-
             if (QLatin1String("fillFrom") == thisProp.name())
                 continue;
 
-            j = thatMeta->indexOfProperty(thisProp.name());
+            int propertyIndex = thatMeta->indexOfProperty(thisProp.name());
 
-            if (j >= 0) {
-                QMetaProperty thatProp = thatMeta->property(j);
+            if (propertyIndex >= 0) {
+                QMetaProperty thatProp = thatMeta->property(propertyIndex);
                 if (thatProp.hasNotifySignal()) {
                     connect(&*priv->m_fillFromObject, thatProp.notifySignal(),
                             priv, fillFromChanged);
