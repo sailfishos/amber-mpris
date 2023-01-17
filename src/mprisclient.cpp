@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2022 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -59,6 +59,7 @@
 
 #include "mprisclient_p.h"
 #include "mprismetadata_p.h"
+#include "mpris_p.h"
 
 #include <QDBusConnection>
 #include <QDBusPendingReply>
@@ -505,20 +506,14 @@ bool MprisClient::canSeek() const
 
 Mpris::LoopStatus MprisClient::loopStatus() const
 {
-    bool ok;
-    int enumVal = QMetaEnum::fromType<Mpris::LoopStatus>().keyToValue(priv->m_mprisPlayerInterface.loopStatus().toUtf8(), &ok);
-
-    if (ok) {
-        return static_cast<Mpris::LoopStatus>(enumVal);
-    }
-
-    return Mpris::LoopNone;
+    const QString &value = priv->m_mprisPlayerInterface.loopStatus();
+    return MprisPrivate::LoopStatusStringToEnum(value);
 }
 
 void MprisClient::setLoopStatus(Mpris::LoopStatus loopStatus)
 {
-    const char *strVal = QMetaEnum::fromType<Mpris::LoopStatus>().valueToKey(loopStatus);
-    priv->m_mprisPlayerInterface.setLoopStatus(QString::fromLatin1(strVal));
+    const QString &strVal = MprisPrivate::loopStatusToString(loopStatus);
+    priv->m_mprisPlayerInterface.setLoopStatus(strVal);
 }
 
 double MprisClient::maximumRate() const
@@ -538,14 +533,8 @@ double MprisClient::minimumRate() const
 
 Mpris::PlaybackStatus MprisClient::playbackStatus() const
 {
-    bool ok;
-    int enumVal = QMetaEnum::fromType<Mpris::PlaybackStatus>().keyToValue(priv->m_mprisPlayerInterface.playbackStatus().toUtf8(), &ok);
-
-    if (ok) {
-        return static_cast<Mpris::PlaybackStatus>(enumVal);
-    }
-
-    return Mpris::Stopped;
+    const QString &value = priv->m_mprisPlayerInterface.playbackStatus();
+    return MprisPrivate::PlaybackStatusStringToEnum(value);
 }
 
 qlonglong MprisClient::position() const

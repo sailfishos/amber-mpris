@@ -24,6 +24,7 @@
 #include "mprismetadata_p.h"
 #include "mprismetadata.h"
 #include "ambermpris_p.h"
+#include "mpris_p.h"
 
 #include <QLoggingCategory>
 
@@ -101,21 +102,13 @@ qlonglong MprisPlayerPrivate::position() const
 
 void MprisPlayerPrivate::setLoopStatus(const QString &value)
 {
-    int enumVal;
+    Mpris::LoopStatus enumVal;
     bool ok = true;
 
-    if (value == QLatin1String("None")) {
-        enumVal = Mpris::LoopNone;
-    } else if (value == QLatin1String("Track")) {
-        enumVal = Mpris::LoopTrack;
-    } else if (value == QLatin1String("Playlist")) {
-        enumVal = Mpris::LoopPlaylist;
-    } else {
-        ok = false;
-    }
+    enumVal = MprisPrivate::stringToLoopStatus(value, &ok);
 
     if (ok) {
-        Q_EMIT q_ptr->loopStatusRequested(enumVal);
+        Q_EMIT q_ptr->loopStatusRequested(static_cast<int>(enumVal));
     } else {
         sendErrorReply(QDBusError::InvalidArgs, QStringLiteral("Invalid loop status"));
     }
@@ -123,22 +116,12 @@ void MprisPlayerPrivate::setLoopStatus(const QString &value)
 
 QString MprisPlayerPrivate::loopStatus() const
 {
-    switch (q_ptr->loopStatus()) {
-    case Mpris::LoopNone:
-        return QLatin1String("None");
-    case Mpris::LoopTrack:
-        return QLatin1String("Track");
-    case Mpris::LoopPlaylist:
-        return QLatin1String("Playlist");
-    default:
-        return QString();
-    }
+    return MprisPrivate::loopStatusToString(q_ptr->loopStatus());
 }
 
 QString MprisPlayerPrivate::playbackStatus() const
 {
-    const char *strVal = QMetaEnum::fromType<Mpris::PlaybackStatus>().valueToKey(static_cast<int>(q_ptr->playbackStatus()));
-    return QString::fromLatin1(strVal);
+    return MprisPrivate::playbackToString(q_ptr->playbackStatus());
 }
 
 void MprisPlayerPrivate::setRate(double rate)

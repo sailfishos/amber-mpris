@@ -37,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
     mpris.h \
+    mpris_p.h \
     mprisclient.h \
     mprisclient_p.h \
     mpriscontroller.h \
