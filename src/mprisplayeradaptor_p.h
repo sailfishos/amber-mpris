@@ -1,5 +1,5 @@
 /*!
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -122,55 +122,7 @@ public:
     MprisPlayerAdaptor(MprisPlayerPrivate *parent);
     virtual ~MprisPlayerAdaptor();
 
-public: // PROPERTIES
-    Q_PROPERTY(bool CanControl READ canControl)
-    bool canControl() const;
-
-    Q_PROPERTY(bool CanGoNext READ canGoNext)
-    bool canGoNext() const;
-
-    Q_PROPERTY(bool CanGoPrevious READ canGoPrevious)
-    bool canGoPrevious() const;
-
-    Q_PROPERTY(bool CanPause READ canPause)
-    bool canPause() const;
-
-    Q_PROPERTY(bool CanPlay READ canPlay)
-    bool canPlay() const;
-
-    Q_PROPERTY(bool CanSeek READ canSeek)
-    bool canSeek() const;
-
-    Q_PROPERTY(QString LoopStatus READ loopStatus WRITE setLoopStatus)
-    QString loopStatus() const;
-    void setLoopStatus(const QString &value);
-
-    Q_PROPERTY(double MaximumRate READ maximumRate)
-    double maximumRate() const;
-
-    Q_PROPERTY(QVariantMap Metadata READ metadata)
-    QVariantMap metadata() const;
-
-    Q_PROPERTY(double MinimumRate READ minimumRate)
-    double minimumRate() const;
-
-    Q_PROPERTY(QString PlaybackStatus READ playbackStatus)
-    QString playbackStatus() const;
-
-    Q_PROPERTY(qlonglong Position READ position)
-    qlonglong position() const;
-
-    Q_PROPERTY(double Rate READ rate WRITE setRate)
-    double rate() const;
-    void setRate(double value);
-
-    Q_PROPERTY(bool Shuffle READ shuffle WRITE setShuffle)
-    bool shuffle() const;
-    void setShuffle(bool value);
-
-    Q_PROPERTY(double Volume READ volume WRITE setVolume)
-    double volume() const;
-    void setVolume(double value);
+    // For properties see MprisPropertiesAdaptor
 
 public Q_SLOTS: // METHODS
     void Next();

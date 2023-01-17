@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,56 +48,6 @@ MprisServiceAdaptor::MprisServiceAdaptor(MprisPlayerPrivate *parent)
 
 MprisServiceAdaptor::~MprisServiceAdaptor()
 {
-}
-
-bool MprisServiceAdaptor::canQuit() const
-{
-    return m_playerPrivate->m_canQuit;
-}
-
-bool MprisServiceAdaptor::canRaise() const
-{
-    return m_playerPrivate->m_canRaise;
-}
-
-bool MprisServiceAdaptor::canSetFullscreen() const
-{
-    return m_playerPrivate->m_canSetFullscreen;
-}
-
-QString MprisServiceAdaptor::desktopEntry() const
-{
-    return m_playerPrivate->m_desktopEntry;
-}
-
-bool MprisServiceAdaptor::fullscreen() const
-{
-    return m_playerPrivate->m_fullscreen;
-}
-
-void MprisServiceAdaptor::setFullscreen(bool value)
-{
-    m_playerPrivate->setProperty("Fullscreen", QVariant::fromValue(value));
-}
-
-bool MprisServiceAdaptor::hasTrackList() const
-{
-    return m_playerPrivate->m_hasTrackList;
-}
-
-QString MprisServiceAdaptor::identity() const
-{
-    return m_playerPrivate->m_identity;
-}
-
-QStringList MprisServiceAdaptor::supportedMimeTypes() const
-{
-    return m_playerPrivate->m_supportedMimeTypes;
-}
-
-QStringList MprisServiceAdaptor::supportedUriSchemes() const
-{
-    return m_playerPrivate->m_supportedUriSchemes;
 }
 
 void MprisServiceAdaptor::Quit()

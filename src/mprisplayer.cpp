@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2022 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +43,7 @@ MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     , m_connection(nullptr)
     , m_serviceAdaptor(this)
     , m_playerAdaptor(this)
+    , m_playerPropertiesAdaptor(this)
     , m_canQuit(false)
     , m_canRaise(false)
     , m_canSetFullscreen(false)
@@ -272,6 +273,56 @@ QVariantMap MprisPlayerPrivate::metaData() const
     return m_metaData.priv->typedMetaData();
 }
 
+bool MprisPlayerPrivate::canQuit() const
+{
+    return m_canQuit;
+}
+
+bool MprisPlayerPrivate::canRaise() const
+{
+    return m_canRaise;
+}
+
+bool MprisPlayerPrivate::canSetFullscreen() const
+{
+    return m_canSetFullscreen;
+}
+
+QString MprisPlayerPrivate::desktopEntry() const
+{
+    return m_desktopEntry;
+}
+
+bool MprisPlayerPrivate::fullscreen() const
+{
+    return m_fullscreen;
+}
+
+bool MprisPlayerPrivate::hasTrackList() const
+{
+    return m_hasTrackList;
+}
+
+QString MprisPlayerPrivate::identity() const
+{
+    return m_identity;
+}
+
+QStringList MprisPlayerPrivate::supportedMimeTypes() const
+{
+    return m_supportedMimeTypes;
+}
+
+QStringList MprisPlayerPrivate::supportedUriSchemes() const
+{
+    return m_supportedUriSchemes;
+}
+
+void MprisPlayerPrivate::setFullscreen(bool value)
+{
+    setProperty("Fullscreen", QVariant::fromValue(value));
+}
+
 void MprisPlayerPrivate::propertyChanged(const QString &iface, const QString &name, const QVariant &value)
 {
     if (!value.isValid()) {
@@ -471,7 +522,7 @@ void MprisPlayer::setLoopStatus(Mpris::LoopStatus loopStatus)
     if (loopStatus != priv->m_loopStatus) {
         priv->m_loopStatus = loopStatus;
         Q_EMIT loopStatusChanged();
-        priv->propertyChanged(PlayerInterface, QStringLiteral("LoopStatus"), priv->m_playerAdaptor.loopStatus());
+        priv->propertyChanged(PlayerInterface, QStringLiteral("LoopStatus"), priv->loopStatus());
     }
 }
 
@@ -496,7 +547,7 @@ void MprisPlayer::setPlaybackStatus(Mpris::PlaybackStatus playbackStatus)
     if (playbackStatus != priv->m_playbackStatus) {
         priv->m_playbackStatus = playbackStatus;
         Q_EMIT playbackStatusChanged();
-        priv->propertyChanged(PlayerInterface, QStringLiteral("PlaybackStatus"), priv->m_playerAdaptor.playbackStatus());
+        priv->propertyChanged(PlayerInterface, QStringLiteral("PlaybackStatus"), priv->playbackStatus());
     }
 }
 void MprisPlayer::setPosition(qlonglong position)

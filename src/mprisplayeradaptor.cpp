@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,101 +46,6 @@ MprisPlayerAdaptor::MprisPlayerAdaptor(MprisPlayerPrivate *parent)
 
 MprisPlayerAdaptor::~MprisPlayerAdaptor()
 {
-}
-
-bool MprisPlayerAdaptor::canControl() const
-{
-    return m_playerPrivate->q_ptr->canControl();
-}
-
-bool MprisPlayerAdaptor::canGoNext() const
-{
-    return m_playerPrivate->q_ptr->canGoNext();
-}
-
-bool MprisPlayerAdaptor::canGoPrevious() const
-{
-    return m_playerPrivate->q_ptr->canGoPrevious();
-}
-
-bool MprisPlayerAdaptor::canPause() const
-{
-    return m_playerPrivate->q_ptr->canPause();
-}
-
-bool MprisPlayerAdaptor::canPlay() const
-{
-    return m_playerPrivate->q_ptr->canPlay();
-}
-
-bool MprisPlayerAdaptor::canSeek() const
-{
-    return m_playerPrivate->q_ptr->canSeek();
-}
-
-QString MprisPlayerAdaptor::loopStatus() const
-{
-    return m_playerPrivate->loopStatus();
-}
-
-void MprisPlayerAdaptor::setLoopStatus(const QString &value)
-{
-    m_playerPrivate->setLoopStatus(value);
-}
-
-double MprisPlayerAdaptor::maximumRate() const
-{
-    return m_playerPrivate->q_ptr->maximumRate();
-}
-
-QVariantMap MprisPlayerAdaptor::metadata() const
-{
-    return m_playerPrivate->metaData();
-}
-
-double MprisPlayerAdaptor::minimumRate() const
-{
-    return m_playerPrivate->q_ptr->minimumRate();
-}
-
-QString MprisPlayerAdaptor::playbackStatus() const
-{
-    return m_playerPrivate->playbackStatus();
-}
-
-qlonglong MprisPlayerAdaptor::position() const
-{
-    return m_playerPrivate->position();
-}
-
-double MprisPlayerAdaptor::rate() const
-{
-    return m_playerPrivate->q_ptr->rate();
-}
-
-void MprisPlayerAdaptor::setRate(double value)
-{
-    m_playerPrivate->setRate(value);
-}
-
-bool MprisPlayerAdaptor::shuffle() const
-{
-    return m_playerPrivate->q_ptr->shuffle();
-}
-
-void MprisPlayerAdaptor::setShuffle(bool value)
-{
-    m_playerPrivate->setShuffle(value);
-}
-
-double MprisPlayerAdaptor::volume() const
-{
-    return m_playerPrivate->q_ptr->volume();
-}
-
-void MprisPlayerAdaptor::setVolume(double value)
-{
-    m_playerPrivate->setVolume(value);
 }
 
 void MprisPlayerAdaptor::Next()

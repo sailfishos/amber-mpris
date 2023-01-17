@@ -31,6 +31,7 @@ SOURCES += \
     mprisplayer.cpp \
     mprisplayeradaptor.cpp \
     mprisplayerinterface.cpp \
+    mprispropertiesadaptor.cpp \
     mprisrootinterface.cpp \
     mprisserviceadaptor.cpp
 
@@ -47,6 +48,7 @@ HEADERS += \
     mprisplayer_p.h \
     ambermpris.h \
     ambermpris_p.h \
+    mprispropertiesadaptor_p.h \
     mprisserviceadaptor_p.h
 
 INSTALL_HEADERS = \
