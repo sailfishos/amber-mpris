@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +43,8 @@
 #include <QVariant>
 #include <QDBusConnection>
 #include <QDBusPendingReply>
+
+#include "mpris_p.h"
 
 namespace Amber {
 /*
@@ -177,8 +179,10 @@ public:
     { return qvariant_cast< bool >(internalPropGet("CanSeek", &m_canSeek)); }
 
     Q_PROPERTY(QString LoopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
+    inline Mpris::LoopStatus internalLoopStatus()
+    { return internalPropGetInternal<Mpris::LoopStatus, QString>("LoopStatus", &m_loopStatus, &MprisPrivate::stringToLoopStatus); }
     inline QString loopStatus()
-    { return qvariant_cast< QString >(internalPropGet("LoopStatus", &m_loopStatus)); }
+    { return internalPropGetExternal<QString, Mpris::LoopStatus>("LoopStatus", &m_loopStatus, &MprisPrivate::loopStatusToString); }
     inline void setLoopStatus(const QString &value)
     { internalPropSet("LoopStatus", QVariant::fromValue(value)); }
 
@@ -195,8 +199,10 @@ public:
     { return qvariant_cast< double >(internalPropGet("MinimumRate", &m_minimumRate)); }
 
     Q_PROPERTY(QString PlaybackStatus READ playbackStatus NOTIFY playbackStatusChanged)
+    inline Mpris::PlaybackStatus internalPlaybackStatus()
+    { return internalPropGetInternal<Mpris::PlaybackStatus, QString>("PlaybackStatus", &m_playbackStatus, &MprisPrivate::stringToPlaybackStatus); }
     inline QString playbackStatus()
-    { return qvariant_cast< QString >(internalPropGet("PlaybackStatus", &m_playbackStatus)); }
+    { return internalPropGetExternal<QString, Mpris::PlaybackStatus>("PlaybackStatus", &m_playbackStatus, &MprisPrivate::playbackToString); }
 
     Q_PROPERTY(qlonglong Position READ position NOTIFY positionChanged)
     inline qlonglong position()
@@ -306,11 +312,11 @@ private:
     bool m_canPause;
     bool m_canPlay;
     bool m_canSeek;
-    QString m_loopStatus;
+    Mpris::LoopStatus m_loopStatus;
     double m_maximumRate;
     QVariantMap m_metadata;
     double m_minimumRate;
-    QString m_playbackStatus;
+    Mpris::PlaybackStatus m_playbackStatus;
     qlonglong m_position;
     double m_rate;
     bool m_shuffle;

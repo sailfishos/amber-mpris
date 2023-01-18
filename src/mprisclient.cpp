@@ -506,8 +506,7 @@ bool MprisClient::canSeek() const
 
 Mpris::LoopStatus MprisClient::loopStatus() const
 {
-    const QString &value = priv->m_mprisPlayerInterface.loopStatus();
-    return MprisPrivate::LoopStatusStringToEnum(value);
+    return priv->m_mprisPlayerInterface.internalLoopStatus();
 }
 
 void MprisClient::setLoopStatus(Mpris::LoopStatus loopStatus)
@@ -533,8 +532,7 @@ double MprisClient::minimumRate() const
 
 Mpris::PlaybackStatus MprisClient::playbackStatus() const
 {
-    const QString &value = priv->m_mprisPlayerInterface.playbackStatus();
-    return MprisPrivate::PlaybackStatusStringToEnum(value);
+    return priv->m_mprisPlayerInterface.internalPlaybackStatus();
 }
 
 qlonglong MprisClient::position() const

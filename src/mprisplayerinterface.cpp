@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2022 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,10 +40,10 @@ MprisPlayerInterface::MprisPlayerInterface(const QString &service, const QString
     , m_canPause(false)
     , m_canPlay(false)
     , m_canSeek(false)
-    , m_loopStatus(QStringLiteral("LoopNone"))
+    , m_loopStatus(Mpris::LoopNone)
     , m_maximumRate(1)
     , m_minimumRate(1)
-    , m_playbackStatus(QStringLiteral("Stopped"))
+    , m_playbackStatus(Mpris::Stopped)
     , m_position(0)
     , m_rate(1)
     , m_shuffle(false)
@@ -95,10 +95,10 @@ void MprisPlayerInterface::onPropertyChanged(const QString &propertyName, const 
             Q_EMIT canSeekChanged(m_canSeek);
         }
     } else if (propertyName == QStringLiteral("LoopStatus")) {
-        QString loopStatus = value.toString();
+        Mpris::LoopStatus loopStatus = MprisPrivate::stringToLoopStatus(value.toString());
         if (m_loopStatus != loopStatus) {
             m_loopStatus = loopStatus;
-            Q_EMIT loopStatusChanged(m_loopStatus);
+            Q_EMIT loopStatusChanged(MprisPrivate::loopStatusToString(m_loopStatus));
         }
     } else if (propertyName == QStringLiteral("MaximumRate")) {
         bool maximumRate = value.toDouble();
@@ -119,10 +119,10 @@ void MprisPlayerInterface::onPropertyChanged(const QString &propertyName, const 
             Q_EMIT minimumRateChanged(m_minimumRate);
         }
     } else if (propertyName == QStringLiteral("PlaybackStatus")) {
-        QString playbackStatus = value.toString();
+        Mpris::PlaybackStatus playbackStatus = MprisPrivate::stringToPlaybackStatus(value.toString());
         if (m_playbackStatus != playbackStatus) {
             m_playbackStatus = playbackStatus;
-            Q_EMIT playbackStatusChanged(m_playbackStatus);
+            Q_EMIT playbackStatusChanged(MprisPrivate::playbackToString(m_playbackStatus));
         }
     } else if (propertyName == QStringLiteral("Position")) {
         qlonglong position = value.toLongLong();

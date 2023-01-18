@@ -36,6 +36,11 @@ public:
     static QString loopStatusToString(Mpris::LoopStatus value);
     static Mpris::PlaybackStatus stringToPlaybackStatus(const QString &value, bool *ok);
     static QString playbackToString(Mpris::PlaybackStatus value);
+
+    static inline Mpris::LoopStatus stringToLoopStatus(QString value)
+    { return stringToLoopStatus(value, nullptr); }
+    static inline Mpris::PlaybackStatus stringToPlaybackStatus(QString value)
+    { return stringToPlaybackStatus(value, nullptr); }
 };
 }
 
