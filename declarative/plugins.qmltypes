@@ -13,7 +13,6 @@ Module {
         prototype: "Amber::MprisPlayer"
         exports: ["Amber.Mpris/MprisPlayer 1.0"]
         exportMetaObjectRevisions: [0]
-        Signal { name: "positionRequested" }
     }
     Component {
         name: "Amber::Mpris"
@@ -31,9 +30,9 @@ Module {
         Enum {
             name: "LoopStatus"
             values: {
-                "None": 0,
-                "Track": 1,
-                "Playlist": 2
+                "LoopNone": 0,
+                "LoopTrack": 1,
+                "LoopPlaylist": 2
             }
         }
     }
@@ -246,6 +245,7 @@ Module {
         }
         Signal { name: "quitRequested" }
         Signal { name: "raiseRequested" }
+        Signal { name: "positionRequested" }
         Signal {
             name: "loopStatusRequested"
             Parameter { name: "loopStatus"; type: "int" }
