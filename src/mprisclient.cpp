@@ -660,6 +660,7 @@ void MprisClientPrivate::onCanControlChanged()
         // I could disconnect and re-connect the signals so I avoid
         // double arriving signals but this really shouldn't happen
         // ever.
+        Q_EMIT q_ptr->canControlChanged();
         Q_EMIT q_ptr->canGoNextChanged();
         Q_EMIT q_ptr->canGoPreviousChanged();
         Q_EMIT q_ptr->canPauseChanged();
@@ -668,6 +669,10 @@ void MprisClientPrivate::onCanControlChanged()
         qCWarning(lcClient) << Q_FUNC_INFO
                             << "CanControl is not supposed to change its value!";
         return;
+    } else if (q_ptr->canControl()) {
+        // Even on the initial "GetAll" we must signal if the default
+        // false value has become true
+        Q_EMIT q_ptr->canControlChanged();
     }
 
     m_canControlReceived = true;
