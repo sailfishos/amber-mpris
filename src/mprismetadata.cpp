@@ -470,7 +470,7 @@ void MprisMetaData::setDuration(const QVariant &duration)
     if (duration.toLongLong() <= 0)
         priv->setMetaData(MetaFieldLength, QVariant());
     else
-        priv->setMetaData(MetaFieldLength, duration);
+        priv->setMetaData(MetaFieldLength, duration.toLongLong() * 1000);
 }
 
 QVariant MprisMetaData::artUrl() const
