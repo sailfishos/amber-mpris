@@ -94,7 +94,7 @@ public:
     Q_INVOKABLE bool previous();
     Q_INVOKABLE bool seek(qlonglong offset);
     Q_INVOKABLE bool setPosition(qlonglong position);
-    Q_INVOKABLE bool setPosition(const QString &aTrackId, qlonglong position);
+    Q_INVOKABLE bool setPosition(const QVariant &aTrackId, qlonglong position);
     Q_INVOKABLE bool stop();
 
     QString service() const;

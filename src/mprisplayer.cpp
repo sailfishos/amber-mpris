@@ -235,10 +235,7 @@ void MprisPlayerPrivate::SetPosition(const QDBusObjectPath &TrackId, qlonglong p
     } else if (!q_ptr->canSeek()) {
         sendErrorReply(QDBusError::Failed, QStringLiteral("The operation can not be performed"));
     } else {
-        QString tid = TrackId.path();
-        if (tid.startsWith(TrackPrefix))
-            tid = tid.mid(TrackPrefix.size());
-        Q_EMIT q_ptr->setPositionRequested(tid, position / 1000);
+        Q_EMIT q_ptr->setPositionRequested(TrackId.path(), position / 1000);
     }
 }
 
