@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2022 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 #include "mprismetadata_p.h"
 #include "mprismetadata.h"
 #include "ambermpris_p.h"
+#include "mpris_p.h"
 
 #include <QLoggingCategory>
 
@@ -43,6 +44,7 @@ MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     , m_connection(nullptr)
     , m_serviceAdaptor(this)
     , m_playerAdaptor(this)
+    , m_playerPropertiesAdaptor(this)
     , m_canQuit(false)
     , m_canRaise(false)
     , m_canSetFullscreen(false)
@@ -100,21 +102,13 @@ qlonglong MprisPlayerPrivate::position() const
 
 void MprisPlayerPrivate::setLoopStatus(const QString &value)
 {
-    int enumVal;
+    Mpris::LoopStatus enumVal;
     bool ok = true;
 
-    if (value == QLatin1String("None")) {
-        enumVal = Mpris::LoopNone;
-    } else if (value == QLatin1String("Track")) {
-        enumVal = Mpris::LoopTrack;
-    } else if (value == QLatin1String("Playlist")) {
-        enumVal = Mpris::LoopPlaylist;
-    } else {
-        ok = false;
-    }
+    enumVal = MprisPrivate::stringToLoopStatus(value, &ok);
 
     if (ok) {
-        Q_EMIT q_ptr->loopStatusRequested(enumVal);
+        Q_EMIT q_ptr->loopStatusRequested(static_cast<int>(enumVal));
     } else {
         sendErrorReply(QDBusError::InvalidArgs, QStringLiteral("Invalid loop status"));
     }
@@ -122,22 +116,12 @@ void MprisPlayerPrivate::setLoopStatus(const QString &value)
 
 QString MprisPlayerPrivate::loopStatus() const
 {
-    switch (q_ptr->loopStatus()) {
-    case Mpris::LoopNone:
-        return QLatin1String("None");
-    case Mpris::LoopTrack:
-        return QLatin1String("Track");
-    case Mpris::LoopPlaylist:
-        return QLatin1String("Playlist");
-    default:
-        return QString();
-    }
+    return MprisPrivate::loopStatusToString(q_ptr->loopStatus());
 }
 
 QString MprisPlayerPrivate::playbackStatus() const
 {
-    const char *strVal = QMetaEnum::fromType<Mpris::PlaybackStatus>().valueToKey(static_cast<int>(q_ptr->playbackStatus()));
-    return QString::fromLatin1(strVal);
+    return MprisPrivate::playbackToString(q_ptr->playbackStatus());
 }
 
 void MprisPlayerPrivate::setRate(double rate)
@@ -270,6 +254,56 @@ void MprisPlayerPrivate::Stop()
 QVariantMap MprisPlayerPrivate::metaData() const
 {
     return m_metaData.priv->typedMetaData();
+}
+
+bool MprisPlayerPrivate::canQuit() const
+{
+    return m_canQuit;
+}
+
+bool MprisPlayerPrivate::canRaise() const
+{
+    return m_canRaise;
+}
+
+bool MprisPlayerPrivate::canSetFullscreen() const
+{
+    return m_canSetFullscreen;
+}
+
+QString MprisPlayerPrivate::desktopEntry() const
+{
+    return m_desktopEntry;
+}
+
+bool MprisPlayerPrivate::fullscreen() const
+{
+    return m_fullscreen;
+}
+
+bool MprisPlayerPrivate::hasTrackList() const
+{
+    return m_hasTrackList;
+}
+
+QString MprisPlayerPrivate::identity() const
+{
+    return m_identity;
+}
+
+QStringList MprisPlayerPrivate::supportedMimeTypes() const
+{
+    return m_supportedMimeTypes;
+}
+
+QStringList MprisPlayerPrivate::supportedUriSchemes() const
+{
+    return m_supportedUriSchemes;
+}
+
+void MprisPlayerPrivate::setFullscreen(bool value)
+{
+    setProperty("Fullscreen", QVariant::fromValue(value));
 }
 
 void MprisPlayerPrivate::propertyChanged(const QString &iface, const QString &name, const QVariant &value)
@@ -471,7 +505,7 @@ void MprisPlayer::setLoopStatus(Mpris::LoopStatus loopStatus)
     if (loopStatus != priv->m_loopStatus) {
         priv->m_loopStatus = loopStatus;
         Q_EMIT loopStatusChanged();
-        priv->propertyChanged(PlayerInterface, QStringLiteral("LoopStatus"), priv->m_playerAdaptor.loopStatus());
+        priv->propertyChanged(PlayerInterface, QStringLiteral("LoopStatus"), priv->loopStatus());
     }
 }
 
@@ -496,7 +530,7 @@ void MprisPlayer::setPlaybackStatus(Mpris::PlaybackStatus playbackStatus)
     if (playbackStatus != priv->m_playbackStatus) {
         priv->m_playbackStatus = playbackStatus;
         Q_EMIT playbackStatusChanged();
-        priv->propertyChanged(PlayerInterface, QStringLiteral("PlaybackStatus"), priv->m_playerAdaptor.playbackStatus());
+        priv->propertyChanged(PlayerInterface, QStringLiteral("PlaybackStatus"), priv->playbackStatus());
     }
 }
 void MprisPlayer::setPosition(qlonglong position)

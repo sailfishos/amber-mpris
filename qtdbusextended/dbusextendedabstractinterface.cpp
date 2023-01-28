@@ -29,9 +29,6 @@
 #include <QtDBus/QDBusPendingReply>
 #include <QtDBus/QDBusVariant>
 
-#include <QtCore/QDebug>
-#include <QtCore/QMetaProperty>
-
 using namespace Amber::Private;
 
 Q_GLOBAL_STATIC_WITH_ARGS(QByteArray, dBusPropertiesInterface, ("org.freedesktop.DBus.Properties"))

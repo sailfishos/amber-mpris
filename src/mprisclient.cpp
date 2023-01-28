@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2015-2022 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -59,6 +59,7 @@
 
 #include "mprisclient_p.h"
 #include "mprismetadata_p.h"
+#include "mpris_p.h"
 
 #include <QDBusConnection>
 #include <QDBusPendingReply>
@@ -505,20 +506,13 @@ bool MprisClient::canSeek() const
 
 Mpris::LoopStatus MprisClient::loopStatus() const
 {
-    bool ok;
-    int enumVal = QMetaEnum::fromType<Mpris::LoopStatus>().keyToValue(priv->m_mprisPlayerInterface.loopStatus().toUtf8(), &ok);
-
-    if (ok) {
-        return static_cast<Mpris::LoopStatus>(enumVal);
-    }
-
-    return Mpris::LoopNone;
+    return priv->m_mprisPlayerInterface.internalLoopStatus();
 }
 
 void MprisClient::setLoopStatus(Mpris::LoopStatus loopStatus)
 {
-    const char *strVal = QMetaEnum::fromType<Mpris::LoopStatus>().valueToKey(loopStatus);
-    priv->m_mprisPlayerInterface.setLoopStatus(QString::fromLatin1(strVal));
+    const QString &strVal = MprisPrivate::loopStatusToString(loopStatus);
+    priv->m_mprisPlayerInterface.setLoopStatus(strVal);
 }
 
 double MprisClient::maximumRate() const
@@ -538,14 +532,7 @@ double MprisClient::minimumRate() const
 
 Mpris::PlaybackStatus MprisClient::playbackStatus() const
 {
-    bool ok;
-    int enumVal = QMetaEnum::fromType<Mpris::PlaybackStatus>().keyToValue(priv->m_mprisPlayerInterface.playbackStatus().toUtf8(), &ok);
-
-    if (ok) {
-        return static_cast<Mpris::PlaybackStatus>(enumVal);
-    }
-
-    return Mpris::Stopped;
+    return priv->m_mprisPlayerInterface.internalPlaybackStatus();
 }
 
 qlonglong MprisClient::position() const
@@ -673,6 +660,7 @@ void MprisClientPrivate::onCanControlChanged()
         // I could disconnect and re-connect the signals so I avoid
         // double arriving signals but this really shouldn't happen
         // ever.
+        Q_EMIT q_ptr->canControlChanged();
         Q_EMIT q_ptr->canGoNextChanged();
         Q_EMIT q_ptr->canGoPreviousChanged();
         Q_EMIT q_ptr->canPauseChanged();
@@ -681,6 +669,10 @@ void MprisClientPrivate::onCanControlChanged()
         qCWarning(lcClient) << Q_FUNC_INFO
                             << "CanControl is not supposed to change its value!";
         return;
+    } else if (q_ptr->canControl()) {
+        // Even on the initial "GetAll" we must signal if the default
+        // false value has become true
+        Q_EMIT q_ptr->canControlChanged();
     }
 
     m_canControlReceived = true;

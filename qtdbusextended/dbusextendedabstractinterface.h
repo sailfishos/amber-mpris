@@ -2,7 +2,7 @@
 
 /*!
  *
- * Copyright (C) 2015-2021 Jolla Ltd.
+ * Copyright (C) 2015-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,8 @@
 
 #include <QDBusAbstractInterface>
 #include <QDBusError>
+#include <QDebug>
+#include <QMetaProperty>
 
 class QDBusPendingCallWatcher;
 
@@ -64,6 +66,12 @@ protected:
     QVariant internalPropGet(const char *propname, void *propertyPtr);
     void internalPropSet(const char *propname, const QVariant &value);
 
+    // Can be used for accessing properties stored with a different type internally
+    template<class External, class Internal>
+    External internalPropGetExternal(const char *propname, Internal *propertyPtr, External convert(Internal from));
+    template<class Internal, class External>
+    Internal internalPropGetInternal(const char *propname, Internal *propertyPtr, Internal convert(External from));
+
 Q_SIGNALS:
     void propertyChanged(const QString &propertyName, const QVariant &value);
     void propertyInvalidated(const QString &propertyName);
@@ -90,6 +98,94 @@ private:
     QDBusError m_lastExtendedError;
     bool m_propertiesChangedConnected;
 };
+
+template<class External, class Internal>
+External DBusExtendedAbstractInterface::internalPropGetExternal(const char *propname, Internal *propertyPtr, External convert(Internal from))
+{
+    m_lastExtendedError = QDBusError();
+
+    if (m_useCache) {
+        return convert(*propertyPtr);
+    }
+
+    if (m_sync) {
+        return qvariant_cast<External>(property(propname));
+    } else {
+        if (!isValid()) {
+            QString errorMessage = QStringLiteral("This Extended DBus interface is not valid yet.");
+            m_lastExtendedError = QDBusMessage::createError(QDBusError::Failed, errorMessage);
+            qDebug() << Q_FUNC_INFO << errorMessage;
+            return External();
+        }
+
+        int propertyIndex = metaObject()->indexOfProperty(propname);
+
+        if (-1 == propertyIndex) {
+            QString errorMessage = QStringLiteral("Got unknown property \"%1\" to read")
+                .arg(QString::fromLatin1(propname));
+            m_lastExtendedError = QDBusMessage::createError(QDBusError::Failed, errorMessage);
+            qWarning() << Q_FUNC_INFO << errorMessage;
+            return External();
+        }
+
+        QMetaProperty metaProperty = metaObject()->property(propertyIndex);
+
+        if (!metaProperty.isReadable()) {
+            QString errorMessage = QStringLiteral("Property \"%1\" is NOT readable")
+                .arg(QString::fromLatin1(propname));
+            m_lastExtendedError = QDBusMessage::createError(QDBusError::Failed, errorMessage);
+            qWarning() << Q_FUNC_INFO << errorMessage;
+            return External();
+        }
+
+        asyncProperty(propname);
+        return convert(*propertyPtr);
+    }
+}
+
+template<class Internal, class External>
+Internal DBusExtendedAbstractInterface::internalPropGetInternal(const char *propname, Internal *propertyPtr, Internal convert(External from))
+{
+    m_lastExtendedError = QDBusError();
+
+    if (m_useCache) {
+        return *propertyPtr;
+    }
+
+    if (m_sync) {
+        return convert(qvariant_cast<External>(property(propname)));
+    } else {
+        if (!isValid()) {
+            QString errorMessage = QStringLiteral("This Extended DBus interface is not valid yet.");
+            m_lastExtendedError = QDBusMessage::createError(QDBusError::Failed, errorMessage);
+            qDebug() << Q_FUNC_INFO << errorMessage;
+            return Internal();
+        }
+
+        int propertyIndex = metaObject()->indexOfProperty(propname);
+
+        if (-1 == propertyIndex) {
+            QString errorMessage = QStringLiteral("Got unknown property \"%1\" to read")
+                .arg(QString::fromLatin1(propname));
+            m_lastExtendedError = QDBusMessage::createError(QDBusError::Failed, errorMessage);
+            qWarning() << Q_FUNC_INFO << errorMessage;
+            return Internal();
+        }
+
+        QMetaProperty metaProperty = metaObject()->property(propertyIndex);
+
+        if (!metaProperty.isReadable()) {
+            QString errorMessage = QStringLiteral("Property \"%1\" is NOT readable")
+                .arg(QString::fromLatin1(propname));
+            m_lastExtendedError = QDBusMessage::createError(QDBusError::Failed, errorMessage);
+            qWarning() << Q_FUNC_INFO << errorMessage;
+            return Internal();
+        }
+
+        asyncProperty(propname);
+        return *propertyPtr;
+    }
+}
 }
 }
 

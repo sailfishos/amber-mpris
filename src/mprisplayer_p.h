@@ -1,6 +1,6 @@
 /*!
  *
- * Copyright (C) 2021 Jolla Ltd.
+ * Copyright (C) 2021-2023 Jolla Ltd.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@
 #include "mprismetadata.h"
 #include "mprisplayeradaptor_p.h"
 #include "mprisserviceadaptor_p.h"
+#include "mprispropertiesadaptor_p.h"
 #include "mprisplayer.h"
 
 namespace Amber {
@@ -44,6 +45,7 @@ public:
     QDBusConnection *m_connection;
     MprisServiceAdaptor m_serviceAdaptor;
     MprisPlayerAdaptor m_playerAdaptor;
+    MprisPropertiesAdaptor m_playerPropertiesAdaptor;
 
     QString m_serviceName;
     bool m_canQuit;
@@ -75,17 +77,32 @@ public:
     double m_volume;
     bool m_inPositionRequested;
 
-public:
+public Q_SLOTS:
+    // Player Adaptor
     qlonglong position() const;
     void setLoopStatus(const QString &value);
     QString loopStatus() const;
-
     QString playbackStatus() const;
+    QVariantMap metaData() const;
 
     void setVolume(double volume);
     void setRate(double rate);
     void setShuffle(bool shuffle);
 
+    // Service Adaptor
+    bool canQuit() const;
+    bool canRaise() const;
+    bool canSetFullscreen() const;
+    QString desktopEntry() const;
+    bool fullscreen() const;
+    bool hasTrackList() const;
+    QString identity() const;
+    QStringList supportedMimeTypes() const;
+    QStringList supportedUriSchemes() const;
+
+    void setFullscreen(bool value);
+
+public:
     void Next();
     void OpenUri(const QString &Uri);
     void Pause();
@@ -96,7 +113,6 @@ public:
     void SetPosition(const QDBusObjectPath &TrackId, qlonglong position);
     void Stop();
 
-    QVariantMap metaData() const;
     void propertyChanged(const QString &iface, const QString &name, const QVariant &value);
 
 private Q_SLOTS:
