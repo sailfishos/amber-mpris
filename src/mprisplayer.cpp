@@ -57,6 +57,8 @@ MprisPlayerPrivate::MprisPlayerPrivate(MprisPlayer *parent)
     , m_canPause(false)
     , m_canPlay(false)
     , m_canSeek(false)
+    , m_hasShuffle(true)
+    , m_hasLoopStatus(true)
     , m_loopStatus(Mpris::LoopNone)
     , m_maximumRate(1)
     , m_minimumRate(1)
@@ -387,6 +389,20 @@ bool MprisPlayer::canSeek() const
     return priv->m_canSeek;
 }
 
+bool MprisPlayer::hasShuffle() const
+{
+    if (!canControl())
+        return false;
+    return priv->m_hasShuffle;
+}
+
+bool MprisPlayer::hasLoopStatus() const
+{
+    if (!canControl())
+        return false;
+    return priv->m_hasLoopStatus;
+}
+
 Mpris::LoopStatus MprisPlayer::loopStatus() const
 {
     return priv->m_loopStatus;
@@ -442,8 +458,10 @@ double MprisPlayer::volume() const
 void MprisPlayer::setCanControl(bool canControl)
 {
     if (canControl != priv->m_canControl) {
-        priv->m_canControl = canControl;
-        Q_EMIT canControlChanged();
+        if (!priv->m_playerPropertiesAdaptor.propertiesLocked()) {
+            priv->m_canControl = canControl;
+            Q_EMIT canControlChanged();
+        }
     }
 }
 void MprisPlayer::setCanGoNext(bool canGoNext)
@@ -493,6 +511,30 @@ void MprisPlayer::setCanSeek(bool canSeek)
         if (canControl()) {
             Q_EMIT canSeekChanged();
             priv->propertyChanged(PlayerInterface, QStringLiteral("CanSeek"), canSeek);
+        }
+    }
+}
+void MprisPlayer::setHasShuffle(bool hasShuffle)
+{
+    if (hasShuffle != priv->m_hasShuffle) {
+        if (!priv->m_playerPropertiesAdaptor.propertiesLocked()) {
+            priv->m_hasShuffle = hasShuffle;
+            priv->m_playerPropertiesAdaptor.hideProperty(QStringLiteral("Shuffle"), !hasShuffle);
+            if (canControl()) {
+                Q_EMIT hasShuffleChanged();
+            }
+        }
+    }
+}
+void MprisPlayer::setHasLoopStatus(bool hasLoopStatus)
+{
+    if (hasLoopStatus != priv->m_hasLoopStatus) {
+        if (!priv->m_playerPropertiesAdaptor.propertiesLocked()) {
+            priv->m_hasLoopStatus = hasLoopStatus;
+            priv->m_playerPropertiesAdaptor.hideProperty(QStringLiteral("LoopStatus"), !hasLoopStatus);
+            if (canControl()) {
+                Q_EMIT hasLoopStatusChanged();
+            }
         }
     }
 }
@@ -620,6 +662,7 @@ void MprisPlayer::setServiceName(const QString &serviceName)
         QDBusConnection::disconnectFromBus(priv->m_connection->name());
         delete priv->m_connection;
         priv->m_connection = nullptr;
+        priv->m_playerPropertiesAdaptor.reset();
     }
 
     if (!serviceName.isEmpty()) {

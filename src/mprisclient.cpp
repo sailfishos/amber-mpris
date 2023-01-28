@@ -40,7 +40,8 @@
     only status can be read.
 
     According to the specification, this should not change value after
-    the controller becomes valid, but the library does not prevent it.
+    the controller becomes valid, but this restriction is only imposed
+    on the \l MprisPlayer side.
 */
 
 /*!
@@ -187,7 +188,8 @@ MprisClient::MprisClient(const QString &service, const QDBusConnection &connecti
     connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::canPauseChanged, this, &MprisClient::canPauseChanged);
     connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::canPlayChanged, this, &MprisClient::canPlayChanged);
     connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::canSeekChanged, this, &MprisClient::canSeekChanged);
-    connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::canSeekChanged, this, &MprisClient::canSeekChanged);
+    connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::hasShuffleChanged, this, &MprisClient::hasShuffleChanged);
+    connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::hasLoopStatusChanged, this, &MprisClient::hasLoopStatusChanged);
     connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::loopStatusChanged, this, &MprisClient::loopStatusChanged);
     connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::maximumRateChanged, this, &MprisClient::maximumRateChanged);
     connect(&priv->m_mprisPlayerInterface, &MprisPlayerInterface::metadataChanged, priv, &MprisClientPrivate::onMetadataChanged);
@@ -503,6 +505,24 @@ bool MprisClient::canSeek() const
     return false;
 }
 
+bool MprisClient::hasShuffle() const
+{
+    if (canControl()) {
+        return priv->m_mprisPlayerInterface.hasShuffle();
+    }
+
+    return false;
+}
+
+bool MprisClient::hasLoopStatus() const
+{
+    if (canControl()) {
+        return priv->m_mprisPlayerInterface.hasLoopStatus();
+    }
+
+    return false;
+}
+
 Mpris::LoopStatus MprisClient::loopStatus() const
 {
     return priv->m_mprisPlayerInterface.internalLoopStatus();
@@ -665,12 +685,20 @@ void MprisClientPrivate::onCanControlChanged()
         Q_EMIT q_ptr->canPauseChanged();
         Q_EMIT q_ptr->canPlayChanged();
         Q_EMIT q_ptr->canSeekChanged();
+        Q_EMIT q_ptr->hasShuffleChanged();
+        Q_EMIT q_ptr->hasLoopStatusChanged();
         qCWarning(lcClient) << Q_FUNC_INFO
                             << "CanControl is not supposed to change its value!";
         return;
     } else if (q_ptr->canControl()) {
         // Even on the initial "GetAll" we must signal if the default
         // false value has become true
+        if (m_mprisPlayerInterface.hasLoopStatus()) {
+            Q_EMIT q_ptr->hasLoopStatusChanged();
+        }
+        if (m_mprisPlayerInterface.hasShuffle()) {
+            Q_EMIT q_ptr->hasShuffleChanged();
+        }
         Q_EMIT q_ptr->canControlChanged();
     }
 

@@ -62,6 +62,8 @@ class AMBER_MPRIS_EXPORT MprisClient : public QObject
     Q_PROPERTY(bool canPause READ canPause NOTIFY canPauseChanged)
     Q_PROPERTY(bool canPlay READ canPlay NOTIFY canPlayChanged)
     Q_PROPERTY(bool canSeek READ canSeek NOTIFY canSeekChanged)
+    Q_PROPERTY(bool hasShuffle READ hasShuffle NOTIFY hasShuffleChanged)
+    Q_PROPERTY(bool hasLoopStatus READ hasLoopStatus NOTIFY hasLoopStatusChanged)
     Q_PROPERTY(Amber::Mpris::LoopStatus loopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
     Q_PROPERTY(double maximumRate READ maximumRate NOTIFY maximumRateChanged)
     Q_PROPERTY(Amber::MprisMetaData *metaData READ metaData CONSTANT)
@@ -118,6 +120,8 @@ public:
     bool canPause() const;
     bool canPlay() const;
     bool canSeek() const;
+    bool hasShuffle() const;
+    bool hasLoopStatus() const;
 
     Mpris::LoopStatus loopStatus() const;
     void setLoopStatus(Mpris::LoopStatus loopStatus);
@@ -162,6 +166,8 @@ Q_SIGNALS:
     void canPauseChanged();
     void canPlayChanged();
     void canSeekChanged();
+    void hasShuffleChanged();
+    void hasLoopStatusChanged();
     void loopStatusChanged();
     void maximumRateChanged();
     void minimumRateChanged();

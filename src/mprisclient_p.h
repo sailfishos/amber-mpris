@@ -178,6 +178,14 @@ public:
     inline bool canSeek()
     { return qvariant_cast< bool >(internalPropGet("CanSeek", &m_canSeek)); }
 
+    Q_PROPERTY(bool HasShuffle READ hasShuffle NOTIFY hasShuffleChanged)
+    inline bool hasShuffle()
+    { return m_hasShuffle; }
+
+    Q_PROPERTY(bool HasLoopStatus READ hasLoopStatus NOTIFY hasLoopStatusChanged)
+    inline bool hasLoopStatus()
+    { return m_hasLoopStatus; }
+
     Q_PROPERTY(QString LoopStatus READ loopStatus WRITE setLoopStatus NOTIFY loopStatusChanged)
     inline Mpris::LoopStatus internalLoopStatus()
     { return internalPropGetInternal<Mpris::LoopStatus, QString>("LoopStatus", &m_loopStatus, &MprisPrivate::stringToLoopStatus); }
@@ -291,6 +299,8 @@ Q_SIGNALS: // SIGNALS
     void canPauseChanged(bool canPause);
     void canPlayChanged(bool canPlay);
     void canSeekChanged(bool canSeek);
+    void hasLoopStatusChanged(bool hasLoopStatus);
+    void hasShuffleChanged(bool hasShuffle);
     void loopStatusChanged(const QString &loopStatus);
     void maximumRateChanged(double maximumRate);
     void metadataChanged(const QVariantMap &metadata);
@@ -312,6 +322,8 @@ private:
     bool m_canPause;
     bool m_canPlay;
     bool m_canSeek;
+    bool m_hasShuffle;
+    bool m_hasLoopStatus;
     Mpris::LoopStatus m_loopStatus;
     double m_maximumRate;
     QVariantMap m_metadata;

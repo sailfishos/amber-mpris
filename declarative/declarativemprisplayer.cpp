@@ -139,8 +139,14 @@ using namespace Amber;
     \brief Indicates whether the player can be controlled remotely
 
     Should be set to true if the player can receive any remote control
-    commands. This should not change value during the lifetime of the
-    player.
+    commands.
+
+    This value must remain constant during the lifetime of the
+    player and the value can't be changed after the first controller
+    has connected.
+
+    In order to change the value, a new \l MprisPlayer should be
+    instantiated.
 
     Defaults to false.
 */
@@ -196,6 +202,41 @@ using namespace Amber;
     setPositionRequested signals.
 
     Defaults to false.
+*/
+
+/*!
+    \qmlproperty bool MprisPlayer::hasShuffle
+    \brief Indicates whether the player has shuffle property
+
+    Should be set to true if shuffle property of the play queue can be
+    accessed. If set to true, remote controllers can read and set shuffle
+    property.
+
+    This value must remain constant during the lifetime of the
+    player and the value can't be changed after the first controller
+    has connected.
+
+    In order to change the value, a new \l MprisPlayer should be
+    instantiated.
+
+    Defaults to true.
+*/
+
+/*!
+    \qmlproperty bool MprisPlayer::hasLoopStatus
+    \brief Indicates whether the player has loopStatus property
+
+    Should be set to true if the loop status can be accessed. If set to true,
+    remote controllers can read and set loopStatus property.
+
+    This value must remain constant during the lifetime of the
+    player and the value can't be changed after the first controller
+    has connected.
+
+    In order to change the value, a new \l MprisPlayer should be
+    instantiated.
+
+    Defaults to true.
 */
 
 /*!

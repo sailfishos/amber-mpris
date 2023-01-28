@@ -178,6 +178,13 @@
 
     When set to false, no control of the player is expected to work,
     only status can be read.
+
+    When set to false, all other control flags (e.g. \l canPlay,
+    \l canPause, \l canGoNext) are automatically set to false.
+
+    According to the specification, this should not change value after
+    the controller becomes valid, but this restriction is only imposed
+    on the \l MprisPlayer side.
 */
 
 /*!
@@ -223,6 +230,32 @@
 
     When set, the seek and setPosition methods  can be called to instruct the
     controlled player to move within the currently playin media.
+*/
+
+/*!
+    \qmlproperty bool MprisController::hasShuffle
+    \brief Indicates whether the shuffle status can be controlled
+
+    When set to false, attempting to set the shuffle property will have
+    no effect as the player doesn't offer the ability to set the shuffle
+    status.
+
+    According to the specification, this should not change value after
+    the controller becomes valid, but this restriction is only imposed
+    on the \l MprisPlayer side.
+*/
+
+/*!
+    \qmlproperty bool MprisController::hasLoopStatus
+    \brief Indicates whether the loop status can be controlled
+
+    When set to false, attempting to set the loopStatus property will have
+    no effect as the player doesn't offer the ability to set the loop
+    status.
+
+    According to the specification, this should not change value after
+    the controller becomes valid, but this restriction is only imposed
+    on the \l MprisPlayer side.
 */
 
 /*!
@@ -770,6 +803,16 @@ bool MprisController::canSeek() const
     return priv->m_currentClient && priv->m_currentClient->canSeek();
 }
 
+bool MprisController::hasShuffle() const
+{
+    return priv->m_currentClient && priv->m_currentClient->hasShuffle();
+}
+
+bool MprisController::hasLoopStatus() const
+{
+    return priv->m_currentClient && priv->m_currentClient->hasLoopStatus();
+}
+
 Mpris::LoopStatus MprisController::loopStatus() const
 {
     return priv->m_currentClient ? priv->m_currentClient->loopStatus() : Mpris::LoopNone;
@@ -1090,6 +1133,8 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
         disconnect(m_currentClient, &MprisClient::canPauseChanged, q_ptr, &MprisController::canPauseChanged);
         disconnect(m_currentClient, &MprisClient::canPlayChanged, q_ptr, &MprisController::canPlayChanged);
         disconnect(m_currentClient, &MprisClient::canSeekChanged, q_ptr, &MprisController::canSeekChanged);
+        disconnect(m_currentClient, &MprisClient::hasShuffleChanged, q_ptr, &MprisController::hasShuffleChanged);
+        disconnect(m_currentClient, &MprisClient::hasLoopStatusChanged, q_ptr, &MprisController::hasLoopStatusChanged);
         disconnect(m_currentClient, &MprisClient::loopStatusChanged, q_ptr, &MprisController::loopStatusChanged);
         disconnect(m_currentClient, &MprisClient::maximumRateChanged, q_ptr, &MprisController::maximumRateChanged);
         disconnect(m_currentClient, &MprisClient::minimumRateChanged, q_ptr, &MprisController::minimumRateChanged);
@@ -1120,6 +1165,8 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     bool oldCanPause = q_ptr->canPause();
     bool oldCanPlay = q_ptr->canPlay();
     bool oldCanSeek = q_ptr->canSeek();
+    bool oldHasShuffle = q_ptr->hasShuffle();
+    bool oldHasLoopStatus = q_ptr->hasLoopStatus();
     Mpris::LoopStatus oldLoopStatus = q_ptr->loopStatus();
     double oldMaximumRate = q_ptr->maximumRate();
     double oldMinimumRate = q_ptr->minimumRate();
@@ -1177,6 +1224,12 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
     if (oldCanSeek != q_ptr->canSeek()) {
         Q_EMIT q_ptr->canSeekChanged();
     }
+    if (oldHasShuffle != q_ptr->hasShuffle()) {
+        Q_EMIT q_ptr->hasShuffleChanged();
+    }
+    if (oldHasLoopStatus != q_ptr->hasLoopStatus()) {
+        Q_EMIT q_ptr->hasLoopStatusChanged();
+    }
     if (oldLoopStatus != q_ptr->loopStatus()) {
         Q_EMIT q_ptr->loopStatusChanged();
     }
@@ -1218,6 +1271,8 @@ void MprisControllerPrivate::setCurrentClient(MprisClient *client)
         connect(m_currentClient, &MprisClient::canPauseChanged, q_ptr, &MprisController::canPauseChanged);
         connect(m_currentClient, &MprisClient::canPlayChanged, q_ptr, &MprisController::canPlayChanged);
         connect(m_currentClient, &MprisClient::canSeekChanged, q_ptr, &MprisController::canSeekChanged);
+        connect(m_currentClient, &MprisClient::hasShuffleChanged, q_ptr, &MprisController::hasShuffleChanged);
+        connect(m_currentClient, &MprisClient::hasLoopStatusChanged, q_ptr, &MprisController::hasLoopStatusChanged);
         connect(m_currentClient, &MprisClient::loopStatusChanged, q_ptr, &MprisController::loopStatusChanged);
         connect(m_currentClient, &MprisClient::maximumRateChanged, q_ptr, &MprisController::maximumRateChanged);
         connect(m_currentClient, &MprisClient::minimumRateChanged, q_ptr, &MprisController::minimumRateChanged);

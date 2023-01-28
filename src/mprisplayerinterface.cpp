@@ -40,6 +40,8 @@ MprisPlayerInterface::MprisPlayerInterface(const QString &service, const QString
     , m_canPause(false)
     , m_canPlay(false)
     , m_canSeek(false)
+    , m_hasShuffle(false)
+    , m_hasLoopStatus(false)
     , m_loopStatus(Mpris::LoopNone)
     , m_maximumRate(1)
     , m_minimumRate(1)
@@ -95,6 +97,10 @@ void MprisPlayerInterface::onPropertyChanged(const QString &propertyName, const 
             Q_EMIT canSeekChanged(m_canSeek);
         }
     } else if (propertyName == QStringLiteral("LoopStatus")) {
+        if (!m_hasLoopStatus) {
+            m_hasLoopStatus = true;
+            Q_EMIT hasLoopStatusChanged(true);
+        }
         Mpris::LoopStatus loopStatus = MprisPrivate::stringToLoopStatus(value.toString());
         if (m_loopStatus != loopStatus) {
             m_loopStatus = loopStatus;
@@ -137,6 +143,10 @@ void MprisPlayerInterface::onPropertyChanged(const QString &propertyName, const 
             Q_EMIT rateChanged(m_rate);
         }
     } else if (propertyName == QStringLiteral("Shuffle")) {
+        if (!m_hasShuffle) {
+            m_hasShuffle = true;
+            Q_EMIT hasShuffleChanged(true);
+        }
         bool shuffle = value.toBool();
         if (m_shuffle != shuffle) {
             m_shuffle = shuffle;
