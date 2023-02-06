@@ -25,7 +25,8 @@
     Provides access to information about media content.
 
     All properties may be undefined if not applicable or known.
-    A default trackId will be returned if one is not defined.
+    A default trackId of \c{/org/mpris/MediaPlayer2/TrackList/NoTrack}
+    will be returned if one is not defined.
 */
 
 /*!
@@ -256,12 +257,11 @@ namespace {
 
     const QString MetaFieldInternalYear = QStringLiteral("year");
 
-    const QString TrackObjectPathPrefix = QStringLiteral("/org/mpris/MediaPlayer2/TrackList/");
+    const QString NoTrackObjectPath = QStringLiteral("/org/mpris/MediaPlayer2/TrackList/NoTrack");
 
     bool validateTrackIdAsObjectPath(const QString &trackId)
     {
-        QDBusObjectPath objectPath(trackId.startsWith('/') ? trackId : (TrackObjectPathPrefix + trackId));
-        return !objectPath.path().isEmpty();
+        return !QDBusObjectPath(trackId).path().isEmpty();
     }
 
     template<class T> QVariant ensureType(const QVariant &from)
@@ -281,18 +281,19 @@ namespace {
 
     template<> QVariant ensureType<QDBusObjectPath>(const QVariant &from)
     {
-        QString path;
+        QDBusObjectPath path;
 
-        if (from.isNull()) {
-            path = TrackObjectPathPrefix + QLatin1String("NoTrack");
-        } else {
-            path = from.toString();
-            if (!path.startsWith('/')) {
-                path = TrackObjectPathPrefix + path;
-            }
+        if (from.userType() == qMetaTypeId<QDBusObjectPath>()) {
+            path = from.value<QDBusObjectPath>();
+        } else if (from.userType() == qMetaTypeId<QString>()) {
+            path = QDBusObjectPath(from.toString());
         }
 
-        return QVariant::fromValue(QDBusObjectPath(path));
+        if (path.path().isEmpty()) {
+            path = QDBusObjectPath(NoTrackObjectPath);
+        }
+
+        return QVariant::fromValue(path);
     }
 
     const QMap<QString, QVariant (*)(const QVariant &)> converters {
@@ -421,10 +422,6 @@ MprisMetaData::~MprisMetaData()
 QVariant MprisMetaData::trackId() const
 {
     if (priv->m_metaData.contains(MetaFieldTrackId)) {
-        QString trackId = priv->m_metaData[MetaFieldTrackId].toString();
-        if (trackId.startsWith(TrackObjectPathPrefix)) {
-            return trackId.mid(TrackObjectPathPrefix.size());
-        }
         return priv->m_metaData[MetaFieldTrackId];
     }
 

@@ -423,7 +423,7 @@
 
     Signals the controlled player that it should move they playback position
     to specified location in milliseconds. The trackId must be the trackId of the
-    currently playing track.
+    currently playing track and must be formatted as a valid DBus path.
 
     Returns true if the request was successfully sent, remote
     errors are not reported.
@@ -598,7 +598,7 @@ bool MprisController::setPosition(qlonglong position) const
     return priv->checkClient(Q_FUNC_INFO) && priv->m_currentClient->setPosition(position);
 }
 
-bool MprisController::setPosition(const QString &trackId, qlonglong position) const
+bool MprisController::setPosition(const QVariant &trackId, qlonglong position) const
 {
     return priv->checkClient(Q_FUNC_INFO) && priv->m_currentClient->setPosition(trackId, position);
 }

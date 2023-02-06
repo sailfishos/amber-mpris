@@ -340,28 +340,27 @@ bool MprisClient::seek(qlonglong offset)
 
 bool MprisClient::setPosition(qlonglong position)
 {
+    return setPosition(metaData()->trackId(), position);
+}
+
+bool MprisClient::setPosition(const QVariant &aTrackId, qlonglong position)
+{
     if (!canSeek()) {
-        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
+        qCDebug(lcClient) << Q_FUNC_INFO << "Setting position is not allowed";
         return false;
     }
 
-    QVariant trackId = metaData()->trackId();
-    if (!trackId.isValid()) {
+    // Accepts a QString or QDBusObjectPath; QString must validate as an object path
+    QDBusObjectPath trackId;
+    if (aTrackId.userType() == qMetaTypeId<QDBusObjectPath>()) {
+        trackId = aTrackId.value<QDBusObjectPath>();
+    } else if (aTrackId.userType() == qMetaTypeId<QString>()) {
+        trackId = QDBusObjectPath(aTrackId.toString());
+    } else {
         qCDebug(lcClient) << Q_FUNC_INFO << "Unknown trackId in which to set the position";
         return false;
     }
 
-    return setPosition(trackId.value<QDBusObjectPath>().path(), position);
-}
-
-bool MprisClient::setPosition(const QString &aTrackId, qlonglong position)
-{
-    if (!canSeek()) {
-        qCDebug(lcClient) << Q_FUNC_INFO << "The method is not allowed";
-        return false;
-    }
-
-    QDBusObjectPath trackId(aTrackId);
     if (trackId.path().isEmpty()) {
         qCDebug(lcClient) << Q_FUNC_INFO << "trackId doesn't map to a valid DBus object path";
         return false;
