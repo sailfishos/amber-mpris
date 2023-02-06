@@ -295,15 +295,9 @@ namespace {
         return QVariant::fromValue(QDBusObjectPath(path));
     }
 
-    QVariant convertLength(const QVariant &from) {
-        if (from.isNull())
-            return QVariant();
-        return QVariant::fromValue(qvariant_cast<qint64>(from) * 1000);
-    }
-
     const QMap<QString, QVariant (*)(const QVariant &)> converters {
         { MetaFieldTrackId, ensureType<QDBusObjectPath> },
-        { MetaFieldLength, convertLength },
+        { MetaFieldLength, ensureType<qint64> },
         { MetaFieldArtUrl, ensureType<QString> },
         { MetaFieldAlbum, ensureType<QString> },
         { MetaFieldAlbumArtist, ensureType<QStringList> },
