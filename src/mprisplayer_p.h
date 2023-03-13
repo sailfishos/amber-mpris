@@ -67,6 +67,8 @@ public:
     bool m_canPause;
     bool m_canPlay;
     bool m_canSeek;
+    bool m_hasShuffle;
+    bool m_hasLoopStatus;
     Mpris::LoopStatus m_loopStatus;
     double m_maximumRate;
     double m_minimumRate;

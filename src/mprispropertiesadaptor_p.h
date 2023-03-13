@@ -48,6 +48,10 @@ public:
     MprisPropertiesAdaptor(MprisPlayerPrivate *parent);
     virtual ~MprisPropertiesAdaptor();
 
+    bool propertiesLocked() const;
+    void hideProperty(const QString &property, bool hidden);
+    void reset();
+
 public Q_SLOTS: // METHODS
     QDBusVariant Get(const QString &interface_name, const QString &property_name);
     void Set(const QString &interface_name, const QString &property_name, const QDBusVariant &value);
@@ -62,6 +66,8 @@ private:
     void set(const QString &setter, const QDBusVariant &value);
 
     MprisPlayerPrivate *m_playerPrivate;
+    bool m_propertiesLocked;
+    QSet<QString> m_maskedProperties;
 };
 }
 

@@ -60,6 +60,8 @@ class AMBER_MPRIS_EXPORT MprisPlayer : public QObject
     Q_PROPERTY(double rate READ rate WRITE setRate NOTIFY rateChanged)
     Q_PROPERTY(bool shuffle READ shuffle WRITE setShuffle NOTIFY shuffleChanged)
     Q_PROPERTY(double volume READ volume WRITE setVolume NOTIFY volumeChanged)
+    Q_PROPERTY(bool hasShuffle READ hasShuffle WRITE setHasShuffle NOTIFY hasShuffleChanged)
+    Q_PROPERTY(bool hasLoopStatus READ hasLoopStatus WRITE setHasLoopStatus NOTIFY hasLoopStatusChanged)
 
 public:
     MprisPlayer(QObject *parent = 0);
@@ -82,6 +84,8 @@ public:
     bool canPause() const;
     bool canPlay() const;
     bool canSeek() const;
+    bool hasShuffle() const;
+    bool hasLoopStatus() const;
     Mpris::LoopStatus loopStatus() const;
     double maximumRate() const;
     MprisMetaData *metaData() const;
@@ -117,6 +121,8 @@ public:
     void setRate(double rate);
     void setShuffle(bool shuffle);
     void setVolume(double volume);
+    void setHasShuffle(bool hasShuffle);
+    void setHasLoopStatus(bool hasLoopStatus);
 
 Q_SIGNALS:
     void serviceNameChanged();
@@ -149,6 +155,8 @@ Q_SIGNALS:
     void rateChanged();
     void shuffleChanged();
     void volumeChanged();
+    void hasShuffleChanged();
+    void hasLoopStatusChanged();
 
     void positionRequested();
     void loopStatusRequested(int loopStatus);

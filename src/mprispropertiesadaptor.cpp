@@ -29,6 +29,7 @@ using namespace Amber;
 MprisPropertiesAdaptor::MprisPropertiesAdaptor(MprisPlayerPrivate *parent)
     : QDBusAbstractAdaptor(parent)
     , m_playerPrivate(parent)
+    , m_propertiesLocked(false)
 {
     setAutoRelaySignals(true);
 }
@@ -106,7 +107,8 @@ QDBusVariant MprisPropertiesAdaptor::Get(const QString &interface_name, const QS
         getMap = serviceGetMap;
     }
 
-    const QString &getter = getMap.value(property_name);
+    const bool masked = m_maskedProperties.contains(property_name);
+    const QString &getter = masked ? QString() : getMap.value(property_name);
     if (!getter.isEmpty()) {
         result = get(getter);
     } else {
@@ -161,6 +163,8 @@ QVariantMap MprisPropertiesAdaptor::GetAll(const QString &interface_name)
     QVariantMap result;
     QMap<QString, QString> getMap;
 
+    m_propertiesLocked = true;
+
     if (interface_name == QLatin1String("org.mpris.MediaPlayer2.Player")) {
         getMap = playerGetMap;
     } else if (interface_name == QLatin1String("org.mpris.MediaPlayer2")) {
@@ -171,8 +175,10 @@ QVariantMap MprisPropertiesAdaptor::GetAll(const QString &interface_name)
 
     QMap<QString, QString>::const_iterator it = getMap.constBegin();
     while (it != getMap.constEnd()) {
-        QVariant value = get(it.value());
-        result.insert(it.key(), value);
+        if (!m_maskedProperties.contains(it.key())) {
+            QVariant value = get(it.value());
+            result.insert(it.key(), value);
+        }
         ++it;
     }
 
@@ -206,11 +212,12 @@ void MprisPropertiesAdaptor::Set(const QString &interface_name, const QString &p
         getMap = serviceGetMap;
     }
 
-    const QString &setter = setMap.value(property_name);
+    const bool masked = m_maskedProperties.contains(property_name);
+    const QString &setter = masked ? QString() : setMap.value(property_name);
     if (!setter.isEmpty()) {
         set(setter, value);
     } else {
-        if (getMap.contains(property_name)) {
+        if (!masked && getMap.contains(property_name)) {
             replyPropertyReadOnlyError(interface_name, property_name);
         } else {
             replyPropertyNotFoundError(interface_name, property_name);
@@ -241,4 +248,24 @@ void MprisPropertiesAdaptor::set(const QString &setter, const QDBusVariant &valu
     if (!success) {
         replyInternalError();
     }
+}
+
+bool MprisPropertiesAdaptor::propertiesLocked() const
+{
+    return m_propertiesLocked;
+}
+
+void MprisPropertiesAdaptor::hideProperty(const QString &property, bool hidden)
+{
+    if (hidden) {
+        m_maskedProperties.insert(property);
+    } else {
+        m_maskedProperties.remove(property);
+    }
+}
+
+void MprisPropertiesAdaptor::reset()
+{
+    // Caller is responsible for unregistering the object
+    m_propertiesLocked = false;
 }
