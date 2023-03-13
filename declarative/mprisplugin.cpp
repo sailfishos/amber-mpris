@@ -24,7 +24,6 @@
 
 #include <Mpris>
 #include <MprisPlayer>
-#include <MprisClient>
 #include <MprisController>
 #include <MprisMetaData>
 #include "declarativemprisplayer_p.h"
@@ -53,6 +52,6 @@ void MprisPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<Mpris>(uri, 1, 0, "Mpris", QStringLiteral("Mpris is a namespace object"));
     qmlRegisterType<DeclarativeMprisPlayer>(uri, 1, 0, "MprisPlayer");
     qmlRegisterType<MprisController>(uri, 1, 0, "MprisController");
-    qmlRegisterUncreatableType<MprisMetaData>(uri, 1, 0, "MprisMetaData", QStringLiteral("MprisMetaData can't be instantiated, use MprisPlayer or MprisManager"));
-    qmlRegisterUncreatableType<MprisClient>(uri, 1, 0, "MprisClient", QStringLiteral("MprisClient can't be instantiated, use MprisManager"));
+    qmlRegisterUncreatableType<MprisMetaData>(uri, 1, 0, "MprisMetaData",
+                                              QStringLiteral("MprisMetaData can't be instantiated, use MprisPlayer or MprisController"));
 }

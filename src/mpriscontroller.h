@@ -25,7 +25,6 @@
 
 #include <ambermpris.h>
 #include <Mpris>
-#include <MprisClient>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>
