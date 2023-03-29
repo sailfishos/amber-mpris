@@ -40,17 +40,41 @@ class MprisPropertiesAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.freedesktop.DBus.Properties")
-    // Introspection of Get, Set and GetAll happens automatically
-    // so avoid adding them twice
-    Q_CLASSINFO("D-Bus Introspection", "")
+    Q_CLASSINFO("D-Bus Introspection",
+"  <interface name=\"org.freedesktop.DBus.Properties\">\n"
+"    <method name=\"Get\">\n"
+"      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+"      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
+"      <arg name=\"value\" type=\"v\" direction=\"out\"/>\n"
+"    </method>\n"
+"    <method name=\"Set\">\n"
+"      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+"      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
+"      <arg name=\"value\" type=\"v\" direction=\"in\"/>\n"
+"    </method>\n"
+"    <method name=\"GetAll\">\n"
+"      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+"      <arg name=\"values\" type=\"a{sv}\" direction=\"out\"/>\n"
+"      <annotation name=\"org.qtproject.QtDBus.QtTypeName.Out0\" value=\"QVariantMap\"/>\n"
+"    </method>\n"
+"    <signal name=\"PropertiesChanged\">\n"
+"      <arg name=\"interface_name\" type=\"s\" direction=\"out\"/>\n"
+"      <arg name=\"changed_properties\" type=\"a{sv}\" direction=\"out\"/>\n"
+"      <annotation name=\"org.qtproject.QtDBus.QtTypeName.Out1\" value=\"QVariantMap\"/>\n"
+"      <arg name=\"invalidated_properties\" type=\"as\" direction=\"out\"/>\n"
+"    </signal>\n"
+"  </interface>\n")
 
 public:
     MprisPropertiesAdaptor(MprisPlayerPrivate *parent);
     virtual ~MprisPropertiesAdaptor();
 
     bool propertiesLocked() const;
+    void lockProperties();
     void hideProperty(const QString &property, bool hidden);
     void reset();
+    bool hasMaskedProperties() const;
+    bool propertyMasked(const QString &property) const;
 
 public Q_SLOTS: // METHODS
     QDBusVariant Get(const QString &interface_name, const QString &property_name);

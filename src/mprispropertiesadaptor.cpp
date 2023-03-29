@@ -23,7 +23,7 @@
 using namespace Amber;
 
 /*
- * Implementation of adaptor class MprisPlayerAdaptor
+ * Implementation of adaptor class MprisPropertiesAdaptor
  */
 
 MprisPropertiesAdaptor::MprisPropertiesAdaptor(MprisPlayerPrivate *parent)
@@ -163,7 +163,7 @@ QVariantMap MprisPropertiesAdaptor::GetAll(const QString &interface_name)
     QVariantMap result;
     QMap<QString, QString> getMap;
 
-    m_propertiesLocked = true;
+    lockProperties();
 
     if (interface_name == QLatin1String("org.mpris.MediaPlayer2.Player")) {
         getMap = playerGetMap;
@@ -268,4 +268,19 @@ void MprisPropertiesAdaptor::reset()
 {
     // Caller is responsible for unregistering the object
     m_propertiesLocked = false;
+}
+
+bool MprisPropertiesAdaptor::hasMaskedProperties() const
+{
+    return !m_maskedProperties.isEmpty();
+}
+
+bool MprisPropertiesAdaptor::propertyMasked(const QString &property) const
+{
+    return m_maskedProperties.contains(property);
+}
+
+void MprisPropertiesAdaptor::lockProperties()
+{
+    m_propertiesLocked = true;
 }
