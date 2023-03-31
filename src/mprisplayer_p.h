@@ -27,6 +27,7 @@
 #include "mprisplayeradaptor_p.h"
 #include "mprisserviceadaptor_p.h"
 #include "mprispropertiesadaptor_p.h"
+#include "mprisintrospectableadaptor_p.h"
 #include "mprisplayer.h"
 
 namespace Amber {
@@ -46,6 +47,7 @@ public:
     MprisServiceAdaptor m_serviceAdaptor;
     MprisPlayerAdaptor m_playerAdaptor;
     MprisPropertiesAdaptor m_playerPropertiesAdaptor;
+    MprisIntrospectableAdaptor m_playerIntrospectableAdaptor;
 
     QString m_serviceName;
     bool m_canQuit;
