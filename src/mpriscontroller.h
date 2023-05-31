@@ -25,6 +25,7 @@
 
 #include <ambermpris.h>
 #include <Mpris>
+#include <MprisMetaData>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>
@@ -36,7 +37,6 @@
 
 namespace Amber {
 
-class MprisMetaData;
 class MprisControllerPrivate;
 
 class AMBER_MPRIS_EXPORT MprisController : public QObject

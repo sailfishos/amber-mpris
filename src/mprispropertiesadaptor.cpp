@@ -130,18 +130,22 @@ QVariant MprisPropertiesAdaptor::get(const QString &getter)
         const QMetaMethod method = m_playerPrivate->metaObject()->method(pidx);
         Q_ASSERT(method.parameterCount() == 0);
 
-        const int returnType = method.returnType();
-        void * returnValue = QMetaType::create(returnType);
+        QMetaType returnType(method.returnType());
+        void * returnValue = returnType.create();
         bool success = method.invoke(m_playerPrivate, Qt::DirectConnection,
                                      QGenericReturnArgument(method.typeName(),
                                                             returnValue));
         if (success) {
             // Conversion to QVariant will take a copy
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
             result = QVariant(returnType, returnValue);
+#else
+            result = QVariant(method.returnType(), returnValue);
+#endif
         } else {
             replyInternalError();
         }
-        QMetaType::destroy(returnType, returnValue);
+        returnType.destroy(returnValue);
     } else {
         // Nothing in MprisPlayerPrivate so check MprisPlayer properties instead
         pidx = m_playerPrivate->q_ptr->metaObject()->indexOfProperty(
@@ -238,7 +242,7 @@ void MprisPropertiesAdaptor::set(const QString &setter, const QDBusVariant &valu
         Q_ASSERT(method.parameterCount() == 1);
 
         // QMetaType maps to Type, as long as our methods stick to the standard types
-        if (method.parameterType(0) == static_cast<int>(value.variant().type())) {
+        if (method.parameterType(0) == value.variant().userType()) {
             success = method.invoke(m_playerPrivate, Qt::DirectConnection,
                                     QGenericArgument(method.parameterNames()[0],
                                                      value.variant().data()));
