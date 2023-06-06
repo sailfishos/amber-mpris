@@ -22,12 +22,12 @@
 
 #include <QObject>
 #include <ambermpris.h>
-#include <mpris.h>
+#include <Mpris>
+#include <MprisMetaData>
 
 namespace Amber {
 
 class MprisPlayerPrivate;
-class MprisMetaData;
 
 class AMBER_MPRIS_EXPORT MprisPlayer : public QObject
 {
