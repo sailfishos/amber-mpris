@@ -321,6 +321,9 @@ void MprisPlayerPrivate::propertyChanged(const QString &iface, const QString &na
 
 void MprisPlayerPrivate::emitPropertiesChanged()
 {
+    if (!m_connection)
+        return;
+
     for (auto i = m_changedProperties.cbegin();
          i != m_changedProperties.cend();
          ++i) {
