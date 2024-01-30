@@ -308,6 +308,9 @@ void MprisPlayerPrivate::setFullscreen(bool value)
 
 void MprisPlayerPrivate::propertyChanged(const QString &iface, const QString &name, const QVariant &value)
 {
+    if (!m_connection)
+        return;
+
     if (!value.isValid()) {
         m_changedProperties[iface].first.remove(name);
         m_changedProperties[iface].second << name;
@@ -667,6 +670,8 @@ void MprisPlayer::setServiceName(const QString &serviceName)
         delete priv->m_connection;
         priv->m_connection = nullptr;
         priv->m_playerPropertiesAdaptor.reset();
+        priv->m_changedDelay.stop();
+        priv->m_changedProperties.clear();
     }
 
     if (!serviceName.isEmpty()) {
