@@ -1,4 +1,4 @@
-Name:       amber-mpris
+Name:       amber-mpris-qt6
 
 Summary:    Qt and QML MPRIS interface and adaptor
 Version:    1.1.0
@@ -8,10 +8,9 @@ URL:        https://github.com/sailfishos/amber-mpris
 Source0:    %{name}-%{version}.tar.bz2
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5DBus)
-BuildRequires:  pkgconfig(Qt5Qml)
-BuildRequires:  sailfish-qdoc-template
+BuildRequires:  pkgconfig(Qt6Core)
+BuildRequires:  pkgconfig(Qt6DBus)
+BuildRequires:  pkgconfig(Qt6Qml)
 
 %description
 %{summary}.
@@ -19,35 +18,29 @@ BuildRequires:  sailfish-qdoc-template
 %package devel
 Summary:    Development files for %{name}
 Requires:   %{name} = %{version}-%{release}
+Conflicts:  amber-mpris-devel
 
 %description devel
 Development files for %{name}.
 
-%package -n amber-qml-plugin-mpris
+%package -n amber-qml-plugin-mpris-qt6
 Summary:    QML plugin for %{name}
 Requires:   %{name} = %{version}-%{release}
 
-%package -n amber-qml-plugin-mpris-doc
-Summary:    QML plugin for %{name} documentation
-BuildArch: noarch
-
-%description -n amber-qml-plugin-mpris
+%description -n amber-qml-plugin-mpris-qt6
 QML plugin for %{name}.
-
-%description -n amber-qml-plugin-mpris-doc
-QML plugin for %{name} documentation.
 
 %prep
 %setup -q -n %{name}-%{version}
 
 %build
 
-%qmake5 VERSION=`echo %{version} | sed 's/+.*//'`
-
-make %{?_smp_mflags}
+export PATH=$PATH:%{_qt6_bindir}
+%qmake_qt6 VERSION=`echo %{version} | sed 's/+.*//'`
+%make_build
 
 %install
-%qmake5_install
+%make_install
 
 %post -p /sbin/ldconfig
 
@@ -55,10 +48,9 @@ make %{?_smp_mflags}
 
 %files
 %license COPYING
-%{_libdir}/lib*.so.*
+%{_libdir}/lib*6.so.*
 
 %files devel
-%{_datarootdir}/qt5/mkspecs/features/ambermpris.prf
 %{_includedir}/AmberMpris/Mpris
 %{_includedir}/AmberMpris/MprisClient
 %{_includedir}/AmberMpris/MprisController
@@ -70,13 +62,10 @@ make %{?_smp_mflags}
 %{_includedir}/AmberMpris/mpriscontroller.h
 %{_includedir}/AmberMpris/mprisplayer.h
 %{_includedir}/AmberMpris/mprismetadata.h
-%{_libdir}/lib*.so
+%{_libdir}/lib*6.so
 %{_libdir}/pkgconfig/*.pc
 
-%files -n amber-qml-plugin-mpris
-%{_libdir}/qt5/qml/Amber/Mpris/libambermprisplugin.so
-%{_libdir}/qt5/qml/Amber/Mpris/plugins.qmltypes
-%{_libdir}/qt5/qml/Amber/Mpris/qmldir
-
-%files -n amber-qml-plugin-mpris-doc
-%{_datadir}/doc/amber-mpris/ambermpris.qch
+%files -n amber-qml-plugin-mpris-qt6
+%{_libdir}/qt6/qml/Amber/Mpris/libambermprisplugin.so
+%{_libdir}/qt6/qml/Amber/Mpris/plugins.qmltypes
+%{_libdir}/qt6/qml/Amber/Mpris/qmldir
