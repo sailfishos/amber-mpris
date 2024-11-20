@@ -74,11 +74,20 @@ OTHER_FILES += \
 target.path = $$[QT_INSTALL_LIBS]
 headers.files = $$INSTALL_HEADERS
 headers.path = /usr/include/AmberMpris
+
+INSTALLS += target headers
+
+equals(QT_MAJOR_VERSION, 5) {
 prf.files = $${TARGET}.prf
 prf.path = $$[QMAKE_MKSPECS]/features
-INSTALLS += target headers prf
-
+INSTALLS += prf
 QMAKE_PKGCONFIG_REQUIRES = Qt5Core Qt5DBus
+}
+
+equals(QT_MAJOR_VERSION, 6) {
+QMAKE_PKGCONFIG_REQUIRES = Qt6Core Qt6DBus
+}
+
 QMAKE_PKGCONFIG_LIBDIR = $$target.path
 QMAKE_PKGCONFIG_INCDIR = $$headers.path
 QMAKE_PKGCONFIG_DESTDIR = pkgconfig
