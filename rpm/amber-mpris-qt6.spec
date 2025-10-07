@@ -40,7 +40,7 @@ export PATH=$PATH:%{_qt6_bindir}
 %make_build
 
 %install
-%make_install
+make install INSTALL_ROOT="%buildroot"
 
 %post -p /sbin/ldconfig
 
