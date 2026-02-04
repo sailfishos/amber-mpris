@@ -32,6 +32,10 @@
 
 using namespace Amber;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+
+#else
+
 template<class T> QObject *api_factory(QQmlEngine *, QJSEngine *)
 {
     return new T;
@@ -55,3 +59,5 @@ void MprisPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<MprisMetaData>(uri, 1, 0, "MprisMetaData",
                                               QStringLiteral("MprisMetaData can't be instantiated, use MprisPlayer or MprisController"));
 }
+
+#endif

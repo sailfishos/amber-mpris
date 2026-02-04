@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_LIBDIR@
+includedir=@CMAKE_INSTALL_PREFIX@/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: AmberMpris
+Description: MPRIS D-Bus implementation for Qt
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -l@MPRISQTLIB@
+Cflags: -I${includedir}/AmberMpris
+Requires: Qt@QT_VERSION_MAJOR@Core Qt@QT_VERSION_MAJOR@DBus

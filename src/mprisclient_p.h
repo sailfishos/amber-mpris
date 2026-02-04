@@ -58,7 +58,7 @@ public:
     { return "org.mpris.MediaPlayer2"; }
 
 public:
-    MprisRootInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
+    MprisRootInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
 
     ~MprisRootInterface();
 
@@ -150,7 +150,7 @@ public:
     { return "org.mpris.MediaPlayer2.Player"; }
 
 public:
-    MprisPlayerInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
+    MprisPlayerInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = nullptr);
 
     ~MprisPlayerInterface();
 

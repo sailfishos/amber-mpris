@@ -25,10 +25,19 @@
 #include <ambermpris.h>
 #include "mprisplayer.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtQml>
+#endif
+
 namespace Amber {
 class AMBER_MPRIS_EXPORT DeclarativeMprisPlayer : public MprisPlayer
 {
     Q_OBJECT
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QML_ELEMENT
+    QML_NAMED_ELEMENT(MprisPlayer)
+#endif
 
 public:
     virtual void setServiceName(const QString &serviceName);

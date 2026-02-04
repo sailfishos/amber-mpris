@@ -23,21 +23,30 @@
 #ifndef MPRIS_PLUGIN_H
 #define MPRIS_PLUGIN_H
 
-#include <QQmlExtensionPlugin>
 #include <QtGlobal>
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QQmlExtensionPlugin>
+#endif
+
 namespace Amber {
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+
+#else
 class MprisPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "Amber.Mpris")
 
 public:
-    MprisPlugin(QObject *parent = 0);
+    MprisPlugin(QObject *parent = nullptr);
     ~MprisPlugin();
 
     virtual void registerTypes(const char *uri);
 };
+#endif
+
 }
 
 

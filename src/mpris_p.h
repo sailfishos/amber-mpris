@@ -40,7 +40,7 @@ public:
     static inline Mpris::LoopStatus stringToLoopStatus(QString value)
     { return stringToLoopStatus(value, nullptr); }
     static inline Mpris::PlaybackStatus stringToPlaybackStatus(QString value)
-    { return stringToPlaybackStatus(value, nullptr); }
+    { return stringToPlaybackStatus(value, nullptr); };
 };
 }
 

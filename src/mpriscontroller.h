@@ -79,7 +79,7 @@ class AMBER_MPRIS_EXPORT MprisController : public QObject
     Q_PROPERTY(double volume READ volume WRITE setVolume NOTIFY volumeChanged)
 
 public:
-    MprisController(QObject *parent = 0);
+    MprisController(QObject *parent = nullptr);
     ~MprisController();
 
     // Mpris2 Root Interface

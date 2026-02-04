@@ -24,7 +24,6 @@
 #define MPRIS_H
 
 #include <ambermpris.h>
-
 #include <QObject>
 #include <QString>
 

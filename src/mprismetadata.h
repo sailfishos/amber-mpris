@@ -65,7 +65,7 @@ class AMBER_MPRIS_EXPORT MprisMetaData : public QObject
     Q_PROPERTY(QVariant fillFrom READ fillFrom WRITE setFillFrom NOTIFY fillFromChanged)
 
 public:
-    MprisMetaData(QObject *parent = 0);
+    MprisMetaData(QObject *parent = nullptr);
     MprisMetaData();
     virtual ~MprisMetaData();
 

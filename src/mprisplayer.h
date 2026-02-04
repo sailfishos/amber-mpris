@@ -64,7 +64,7 @@ class AMBER_MPRIS_EXPORT MprisPlayer : public QObject
     Q_PROPERTY(bool hasLoopStatus READ hasLoopStatus WRITE setHasLoopStatus NOTIFY hasLoopStatusChanged)
 
 public:
-    MprisPlayer(QObject *parent = 0);
+    MprisPlayer(QObject *parent = nullptr);
     virtual ~MprisPlayer();
 
     QString serviceName() const;

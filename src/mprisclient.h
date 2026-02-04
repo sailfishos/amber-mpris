@@ -75,7 +75,7 @@ class AMBER_MPRIS_EXPORT MprisClient : public QObject
     Q_PROPERTY(double volume READ volume WRITE setVolume NOTIFY volumeChanged)
 
 public:
-    MprisClient(const QString &service, const QDBusConnection &connection, QObject *parent = 0);
+    MprisClient(const QString &service, const QDBusConnection &connection, QObject *parent = nullptr);
     ~MprisClient();
 
     bool isValid() const;
