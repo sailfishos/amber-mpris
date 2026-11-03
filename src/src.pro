@@ -71,15 +71,21 @@ OTHER_FILES += \
     org.mpris.MediaPlayer2.xml \
     org.mpris.MediaPlayer2.Player.xml
 
-target.path = $$[QT_INSTALL_LIBS]
+isEmpty(PREFIX) {
+    target.path = $$[QT_INSTALL_LIBS]
+    headers.path = /usr/include/AmberMpris
+    prf.path = $$[QMAKE_MKSPECS]/features
+} else {
+    target.path = $${LIBDIR}
+    headers.path = $${PREFIX}/include/AmberMpris
+    prf.path = $${PREFIX}/share/qt5/mkspecs/features
+}
 headers.files = $$INSTALL_HEADERS
-headers.path = /usr/include/AmberMpris
 
 INSTALLS += target headers
 
 equals(QT_MAJOR_VERSION, 5) {
 prf.files = $${TARGET}.prf
-prf.path = $$[QMAKE_MKSPECS]/features
 INSTALLS += prf
 QMAKE_PKGCONFIG_REQUIRES = Qt5Core Qt5DBus
 }
