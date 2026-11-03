@@ -25,7 +25,7 @@ HEADERS += \
     mprisplugin.h
 
 isEmpty(PREFIX): target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
-else: target.path = $${PREFIX}/lib/qml/$$PLUGIN_IMPORT_PATH
+else: target.path = $${LIBDIR}/qml/$$PLUGIN_IMPORT_PATH
 
 qml.files = \
     qmldir \

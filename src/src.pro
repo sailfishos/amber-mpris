@@ -76,7 +76,7 @@ isEmpty(PREFIX) {
     headers.path = /usr/include/AmberMpris
     prf.path = $$[QMAKE_MKSPECS]/features
 } else {
-    target.path = $${PREFIX}/lib
+    target.path = $${LIBDIR}
     headers.path = $${PREFIX}/include/AmberMpris
     prf.path = $${PREFIX}/share/qt5/mkspecs/features
 }
